@@ -1,30 +1,20 @@
 import React, {FormEvent, FormEventHandler, useEffect, useState} from 'react';
 import { socket } from '@/components/socket';
+import {useSocket} from "@/components/context/SocketContext";
+import {Server} from "node:net";
 
-export function RoomJoin(
-    {username, joinRoom}: {username: string, joinRoom: (id: string) => void},
-) {
-    const [room, setRoom] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+export function RoomJoin() {
+    const {joinServer} = useSocket()
+    const [room, setRoom] = useState<string>('')
 
-
-    function onRoomJoin(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        setIsLoading(true);
-
-        socket.timeout(2000).emit('joinRoom', {room, username}, () => {
-            setIsLoading(false);
-            joinRoom(room)
-        })
-    }
     return (
         <div>
-            <form onSubmit={onRoomJoin}>
+            <form onSubmit={() => joinServer(room)}>
                 <label>
                     Room name:
                     <input onChange={e => setRoom(e.target.value)}/>
                 </label>
-                <button type="submit" disabled={isLoading}>Submit</button>
+                <button type="submit">Submit</button>
             </form>
         </div>
     );

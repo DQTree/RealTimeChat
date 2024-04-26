@@ -1,70 +1,147 @@
 'use client'
 
-import {createContext, ReactNode, useContext, useState} from "react";
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import {CustomServer} from "@/components/domain/CustomServer";
 import {socket} from "@/components/socket";
+import {func} from "prop-types";
 
 interface SocketContextType {
+    login: (username: string) => void;
+    createServer: (serverName: string, description: string) => void;
+    createChannel: (channelName: string) => void;
     joinServer: (server: string) => void;
     joinChannel: (channel: string) => void;
-    sendMessageToChannel: (message: string) => void;
+    message: (message: string) => void;
+    servers: CustomServer[];
+    channels: CustomChannel[];
+    currentServer: CustomServer | undefined;
+    currentChannel: CustomChannel | undefined;
+}
+
+interface ServerResponse {
+    status: string;
 }
 
 type ServersState = Map<string, Map<string, string[]>>;
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-export function SocketProvider({ children }: {children: ReactNode}) {
-    const [server, setServer] = useState<string>('');
-    const [channel, setChannel] = useState<string>('');
-    const [username, setUsername] = useState<string>('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [servers, setServers] = useState<ServersState>(new Map());
+export function SocketProvider({ children }: { children: ReactNode }) {
+    const [isConnected, setIsConnected] = useState(socket.connected);
 
-    function joinServer(server: string) {
-        socket.emit('joinServer', {server}, () => {
-            if(!servers.has(server)) {
-                const newServersState = new Map(servers);
-                newServersState.set(server, new Map());
-                setServers(newServersState);
-            }
-            setServer(server);
+    const [currentUsername, setCurrentUsername] = useState<string>("");
+    const [currentServer, setServer] = useState<CustomServer | undefined>(undefined)
+    const [servers, setServers] = useState<CustomServer[]>([])
+    const [currentChannel, setChannel] = useState<CustomChannel | undefined>(undefined);
+    const [channels, setChannels] = useState<CustomChannel[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
+
+    const [isLoading, setLoading] = useState<boolean>(false);
+
+    function login(username: string){
+        setLoading(true);
+
+        socket.emit("login", username, () => {
+            setCurrentUsername(username);
+            setLoading(false);
         });
     }
 
-    function joinChannel(channel: string) {
-        setIsLoading(true);
+    function createServer(serverName: string, description: string){
+        setLoading(true);
 
-        socket.emit('joinChannel', {server, channel, username}, () => {
-            setIsLoading(false);
-            setChannel(channel);
-        })
-    }
-
-    function sendMessageToChannel(message: string) {
-        setIsLoading(true);
-
-        socket.emit('sendMessageToChannel', {server, channel, message}, () => {
-            setIsLoading(false);
+        socket.emit("createServer", {serverName, description}, (response: ServerResponse) => {
+            console.log(response.status)
         });
     }
 
-    return(
+    function joinServer(channelName: string){
+        setLoading(true);
+
+        socket.emit("joinServer", channelName, (response: ServerResponse) => {
+            console.log(response.status)
+        });
+    }
+
+    function createChannel(channelName: string){
+        setLoading(true);
+
+        socket.emit("createChannel", channelName, (response: ServerResponse) => {
+            console.log(response.status)
+        });
+    }
+
+    function joinChannel(channelName: string){
+        setLoading(true);
+
+        socket.emit("joinChannel", channelName, (response: ServerResponse) => {
+            console.log(response.status)
+        });
+    }
+
+    function message(message: string){
+        setLoading(true);
+
+        socket.emit("message", {serverName: currentServer!.name, channelName: currentChannel!.name, message: message}, (response: ServerResponse) => {
+            console.log(response.status)
+        });
+    }
+
+    useEffect(() => {
+        function onLogin(response: string){
+            console.log(response);
+        }
+
+        function onCreateServer(response: CustomServer[]){
+            setServers(response)
+            console.log(response)
+        }
+
+        function onConnect() {
+            setIsConnected(true);
+        }
+
+        function onDisconnect() {
+            setIsConnected(false);
+        }
+
+        socket.on("loginSuccess", onLogin);
+        socket.on("createServerSuccess", onCreateServer);
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+
+        return () => {
+            socket.off("loginSuccess", onLogin);
+            socket.off("createServerSuccess", onCreateServer)
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+        }
+    }, [socket])
+
+    return (
         <SocketContext.Provider
-        value={{
-            joinServer,
-            joinChannel,
-            sendMessageToChannel,
-        }}
+            value={{
+                login,
+                createServer,
+                createChannel,
+                joinServer,
+                joinChannel,
+                message,
+                servers,
+                channels,
+                currentServer,
+                currentChannel
+            }}
         >
             {children}
         </SocketContext.Provider>
-    )
+    );
 }
 
 export function useSocket() {
     const context = useContext(SocketContext);
     if (context === undefined) {
-        throw new Error('useSocket must be used within an SocketProvider');
+        throw new Error('useSocket must be used within a SocketProvider');
     }
     return context;
 }

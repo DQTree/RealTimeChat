@@ -1,3 +1,19 @@
+'use client'
+
+import Servers from "@/components/servers/Servers";
+import {SocketProvider} from "@/components/context/SocketContext";
+
+import './globals.css'
+
 export default function Page() {
-  return <h1>Hello, Next.js!</h1>
+
+  return(
+      <div>
+          <SocketProvider>
+              <Servers>
+
+              </Servers>
+          </SocketProvider>
+      </div>
+  )
 }
