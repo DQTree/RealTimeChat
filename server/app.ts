@@ -28,7 +28,9 @@ io.on("connect", (socket: Socket) => {
             users.set(id, new User(username, id));
         }
 
-        io.to(id).emit("loginSuccess", "Logged in successfully! Users logged in: " + users);
+        const serversIn = servers.filter(e => e.users.some(users => users.name == username))
+
+        io.to(id).emit("loginSuccess", serversIn);
     })
 
     socket.on("createServer", (data: {serverName: string, description: string}) => {

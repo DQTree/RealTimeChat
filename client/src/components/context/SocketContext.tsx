@@ -16,13 +16,12 @@ interface SocketContextType {
     channels: CustomChannel[];
     currentServer: CustomServer | undefined;
     currentChannel: CustomChannel | undefined;
+    currentUsername: string | undefined;
 }
 
 interface ServerResponse {
     status: string;
 }
-
-type ServersState = Map<string, Map<string, string[]>>;
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
@@ -88,7 +87,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
 
     useEffect(() => {
-        function onLogin(response: string){
+        function onLogin(response: CustomServer[]){
+            setServers(response)
             console.log(response);
         }
 
@@ -130,7 +130,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
                 servers,
                 channels,
                 currentServer,
-                currentChannel
+                currentChannel,
+                currentUsername
             }}
         >
             {children}

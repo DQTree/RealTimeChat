@@ -1,0 +1,15 @@
+.server {
+    width: 3rem;
+    height: 3rem;
+    background-color: grey;
+    border-radius: 32px;
+    transition: ease-out 0.2s;
+    border: transparent;
+    text-align: center;
+    align-content: center;
+}
+
+.server:hover {
+    transition: ease-in-out 0.2s;
+    border-radius: 20px;
+}
