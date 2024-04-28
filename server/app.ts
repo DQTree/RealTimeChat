@@ -1,160 +1,171 @@
-import express, { Express } from "express";
-import { createServer } from "http";
-import { Socket, Server } from "socket.io";
-import {CustomServer} from './domain/CustomServer'
-import {CustomChannel} from './domain/CustomChannel'
-import {Message} from './domain/Message'
+import express from 'express';
+import http from 'http';
+import {Server, Socket} from 'socket.io';
+import {Message} from "./domain/Message";
+import {CustomServer} from "./domain/CustomServer";
 import {User} from "./domain/User";
+import {CustomChannel} from "./domain/CustomChannel";
 
-const app: Express = express();
-const httpServer = createServer(app);
+const app = express();
+const server = http.createServer(app);
 const io = new Server({
     cors: {
         origin: "http://localhost:3000"
     }
 });
 
-const users: Map<string, User> = new Map();
-const servers: CustomServer[] = [];
+const users: User[] = [];
+let servers: CustomServer[] = [];
 
-// Handle socket connections
-io.on("connect", (socket: Socket) => {
-    console.log("User connected")
+io.on("connect", (main: Socket) => {
+    console.log(`Client connected to main`);
 
-    socket.on("login", (username: string) => {
-        const id = socket.id
 
-        if(!userExists(id)){
-            users.set(id, new User(username, id));
+    main.on("login", (username: string) => {
+        const id = main.id
+
+        if(!userExists(username) || !socketExists(id)){
+           users.push(new User(username, main.id))
         }
 
-        const serversIn = servers.filter(e => e.users.some(users => users.name == username))
+        const serversIn = servers.filter(e => {
+            e.users.some(user => user.name === username) || e.owner.some(user => user.name === username);
+        })
 
-        io.to(id).emit("loginSuccess", serversIn);
+        serversIn.forEach(e => {
+            main.join(e.id.toString(10))
+        })
+
+        const user = users.find(e => e.socketId == id)!
+
+        io.to(id).emit("loginSuccess", {user: user, servers: serversIn});
     })
 
-    socket.on("createServer", (data: {serverName: string, description: string}) => {
-        const id = socket.id
-        const {serverName, description} = data;
+    main.on("createServer", (data: {serverName: string, serverDescription: string}) => {
+        const {serverName, serverDescription} = data;
+        const id = main.id
 
-        if(!userExists(id)){
-            io.to(id).emit("createServerError", "User not logged in")
-            return;
+        if(!socketExists(id)){
+            main.to(id).emit("createServerError", "Error occurred while creating server");
+            return
         }
 
-        if(serverExists(serverName)){
-            io.to(id).emit("createServerError", "Server already exists")
-            return;
-        }
+        const owner = users.find(e => e.socketId == id)!
+        const server = new CustomServer(serverName, serverDescription, owner);
 
-        servers.push(new CustomServer(serverName, description, users.get(id)!));
+        servers.push(server)
 
-        io.to(id).emit("createServerSuccess", servers);
-    });
-
-    socket.on("createChannel", (data: {serverName: string, channelName: string, description: string}) => {
-        const id = socket.id
-        const {serverName, channelName, description} = data;
-
-        if(!userExists(id)){
-            io.to(id).emit("createChannelError", "User not logged in.")
-            return;
-        }
-
-        const serverIndex = servers.findIndex(server => server.name === serverName);
-
-        if (serverIndex === -1) {
-            io.to(id).emit("createChannelError", "Server does not exist.");
-            return;
-        }
-
-        servers[serverIndex].channels.push([new CustomChannel(channelName, description), []]);
-
-        io.emit("createChannelSuccess", { serverName, channelName, description });
-    });
-
-    socket.on("joinServer", (data: {serverName:string}) => {
-        const id = socket.id
-        const {serverName} = data
-
-        if(!userExists(id)){
-            io.to(id).emit("joinServerError", "User not logged in.")
-            return;
-        }
-
-        if(!serverExists(serverName)){
-            io.to(id).emit("joinServerError", "Server does not exist.")
-            return;
-        }
-
-        io.to(id).emit("joinServerSuccess")
-    });
-
-    socket.on("joinChannel", (data: {serverName: string, channelName: string}) => {
-        const id = socket.id;
-        const { serverName, channelName } = data;
-
-        if (!userExists(id)) {
-            io.to(id).emit("joinChannelError", "User not logged in.");
-            return;
-        }
-
-        const serverIndex = servers.findIndex(server => server.name === serverName);
-
-        if (serverIndex === -1) {
-            io.to(id).emit("joinChannelError", "Server does not exist.");
-            return;
-        }
-
-        const channelIndex = servers[serverIndex].channels.findIndex(channel => channel[0].name === channelName);
-
-        if (channelIndex === -1) {
-            io.to(id).emit("joinChannelError", "Server/channel doesn't exist.");
-            return;
-        }
-
-        const messages = servers[serverIndex].channels[channelIndex][1];
-
-        io.to(id).emit("joinChannelSuccess", { messages });
+        main.join(server.id.toString(10));
+        io.to(id).emit("createServerSuccess", server);
     })
 
-    socket.on("message", (data: {serverName: string, channelName: string, message: string}) => {
-        const id = socket.id
-        const {serverName, channelName, message} = data
+    main.on("joinServer", (data: { username: string, serverName: string }) => {
+        const {username, serverName} = data
+        const id = main.id
 
-        if(!channelExists(serverName, channelName)){
-            io.to(id).emit("joinChannelError", "Server/channel doesn't exist.")
+        const serverFound = servers.find(s => s.name == serverName)
+
+        if(!serverFound){
+            main.to(id).emit("joinServerError", "Error occurred while joining server");
+            return;
         }
 
-        io.to(channelName).emit("message", {username: users.get(id), message: message})
-    });
+        const userJoined = users.find(e => e.name == username)
+        const serverId = servers.find(s => s.name == serverName)!.id
 
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-    });
+        main.join(serverFound.id.toString(10));
+        io.to(id).emit("memberJoined", {user: userJoined, serverId: serverId});
+        io.to(id).emit("joinServerSuccess", serverFound);
+    })
 
-    function userExists(socketId: string): boolean {
-        for (const user of users.values()) {
-            if (user.socketId === socketId) {
-                return true;
+    main.on("createChannel", (data: {serverId: number, channelName: string, channelDescription: string}) => {
+        const id = main.id
+
+        const {serverId, channelName, channelDescription} = data;
+
+        const serverFound = servers.find(s => s.id == serverId);
+
+        if(!serverFound){
+            main.to(id).emit("createChannelError", "Error occurred while creating channel.");
+            return;
+        }
+
+        const newChannel = new CustomChannel(channelName, channelDescription)
+
+        servers.forEach(s => {
+            if(s.id == serverId){
+                s.channels.push(newChannel)
+                return;
             }
+        })
+
+        io.to(serverId.toString(10)).emit("createChannelSuccess", {serverId: serverId, channel: newChannel});
+    })
+
+    main.on("messageServer", (data: {serverId: number, channelId: number, message: string}) => {
+        const id = main.id
+        const {serverId, channelId, message} = data
+
+        const serverFound = servers.find(s => s.id == serverId);
+
+        if(!serverFound){
+            console.log("Server not found")
+            main.to(id).emit("messageServerError", "Error occurred while messaging channel.");
+            return;
         }
-        return false;
-    }
 
-    function serverExists(serverName: string): boolean {
-        return servers.some(server => server.name === serverName);
-    }
+        const channelFound = serverFound.channels.find(s => s.id == channelId);
 
-    function channelExists(serverName: string, channelName: string): boolean {
-        const serverIndex = servers.findIndex(server => server.name === serverName);
-        if (serverIndex !== -1) {
-            return servers[serverIndex].channels.some(channel => channel[0].name === channelName);
+        if(!channelFound){
+            console.log("Channel not found")
+            main.to(id).emit("messageServerError", "Error occurred while messaging channel.");
+            return;
         }
-        return false;
+
+        const user = users.find(e => e.socketId == id)!
+        const newMessage = new Message(user.name, message)
+
+        servers.forEach(s => {
+            if(s.id == serverId){
+                s.channels.forEach(channel => {
+                    if(channel.id == channelId){
+                        channel.messages.push(newMessage)
+                        return;
+                    }
+                })
+                return;
+            }
+        })
+
+        io.to(serverId.toString(10)).emit("messageServerSuccess", {serverId: serverId, channelId: channelId, message: newMessage});
+    })
+
+    main.on("leaveServer", (serverId: number) => {
+        const id = main.id
+        const serverFound = servers.find(s => s.id == serverId)
+
+        if(!serverFound){
+            main.to(id).emit("leaveServerError", serverFound);
+            return;
+        }
+
+        main.leave(serverFound.id.toString(10));
+        io.to(id).emit("leaveServerSuccess", "Left successfully");
+    })
+
+    main.on("disconnect", () => {
+        console.log(`Client disconnected from main`);
+    })
+
+    function userExists(username: string){
+        return users.some(e => e.name === username)
     }
 
-});
+    function socketExists(id: string){
+        return users.some(e => e.socketId === id);
+    }
+
+})
 
 // Start the server
 const PORT = 4000;

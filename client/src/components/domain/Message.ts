@@ -1,4 +1,4 @@
-class Message {
+export class Message {
     author: string
     message: string
     constructor(author: string, message: string) {

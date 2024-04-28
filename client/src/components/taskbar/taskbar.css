@@ -1,11 +1,19 @@
 #taskbar {
-    width: 10rem;
+    width: 16rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+#channels {
+    background: rgba(32, 32, 32, 1);
 }
 
 #userbar {
-    width: 100%;
+
 }
 
-#userbar button{
+#userbar button {
     width: 100%;
 }

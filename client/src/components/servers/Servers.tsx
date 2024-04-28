@@ -5,24 +5,29 @@ import ServerButton from "@/components/servers/ServerButton";
 
 import './server.css'
 import {useState} from "react";
+import Button from "react-bootstrap/Button";
+import {useOverlay} from "@/components/context/OverlayContext";
+import ServerCreateForm from "@/components/servers/ServerCreateForm";
 
 export default function Servers() {
-    const {login, createServer, servers} = useSocket()
-    const [isServerAdd, setServerAdd] = useState(false)
+    const {servers} = useSocket()
+    const {handleShow} = useOverlay()
 
-    return(
+    return (
         <div id="servers">
-            {Array.from(servers.entries()).map(([serverName, server]) => (
-                <ServerButton id={serverName} name={server.name} image={"avb"}/>
-            ))}
             <button className="server material-symbols-outlined"
-                    onClick={() => setServerAdd(true)}>add
+                    onClick={() => {
+                    }}>density_large
             </button>
-            {
-                isServerAdd ?
-                    <div></div>
-                    : ""
-            }
+            {servers && servers.map((a) => (
+                <ServerButton key={a.name} id={a.id} name={a.name} image={"avb"}/>
+            ))}
+            <Button
+                variant="primary"
+                className="server material-symbols-outlined"
+                onClick={() => handleShow(<ServerCreateForm/>)}>
+                add
+            </Button>
         </div>
     )
 }
