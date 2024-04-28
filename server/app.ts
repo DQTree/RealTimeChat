@@ -32,11 +32,13 @@ io.on("connect", (main: Socket) => {
             e.users.some(user => user.name === username) || e.owner.some(user => user.name === username);
         })
 
+        console.log(serversIn)
+
         serversIn.forEach(e => {
             main.join(e.id.toString(10))
         })
 
-        const user = users.find(e => e.socketId == id)!
+        const user = users.find(e => e.name == username)!
 
         io.to(id).emit("loginSuccess", {user: user, servers: serversIn});
     })
@@ -70,11 +72,16 @@ io.on("connect", (main: Socket) => {
             return;
         }
 
-        const userJoined = users.find(e => e.name == username)
-        const serverId = servers.find(s => s.name == serverName)!.id
+        const userJoined = users.find(e => e.name == username)!
+
+        servers.forEach(s => {
+            if(s.id == serverFound.id){
+                s.users.push(userJoined)
+            }
+        })
 
         main.join(serverFound.id.toString(10));
-        io.to(id).emit("memberJoined", {user: userJoined, serverId: serverId});
+        io.to(serverFound.id.toString(10)).emit("memberJoined", {user: userJoined, serverId: serverFound.id});
         io.to(id).emit("joinServerSuccess", serverFound);
     })
 

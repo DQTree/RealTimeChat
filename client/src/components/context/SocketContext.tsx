@@ -39,7 +39,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
 
     function joinServer(serverName: string){
-        socket.emit("joinServer", {serverName: serverName});
+        socket.emit("joinServer", {username: isLoggedIn!.name, serverName: serverName});
     }
 
     function createChannel(channelName: string, channelDescription: string){
@@ -62,7 +62,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     function changeChannel(channelId: number){
         const channel = servers[currentServer].channels.findIndex(s => s.id === channelId);
-        console.log(channel)
         setCurrentChannel(channel)
     }
 
@@ -99,15 +98,17 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             setCurrentChannel(channel.id);
         }
 
-        function onMemberJoinSuccess(data: {userJoined: User, serverId: number}){
-            const {userJoined, serverId} = data
+        function onMemberJoinSuccess(data: {user: User, serverId: number}){
+            const {user, serverId} = data
+
+            console.log(user)
 
             setServers(prev => {
                 return prev.map(server => {
                     if (server.id === serverId) {
                         return {
                             ...server,
-                            users: [...server.users, userJoined]
+                            users: [...server.users, user]
                         };
                     }
                     return server;
