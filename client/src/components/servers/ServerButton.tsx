@@ -5,7 +5,7 @@ export default function ServerButton({id, name, image}: {id: number, name: strin
 
     return(
         <button className="server" id={name} onClick={() => {changeServer(id)}}>
-            {name}
+            {image ? <img src={image} alt={name} /> : name[0]}
         </button>
     )
 }

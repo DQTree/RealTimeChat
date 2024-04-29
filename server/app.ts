@@ -9,6 +9,7 @@ import {CustomChannel} from "./domain/CustomChannel";
 const app = express();
 const server = http.createServer(app);
 const io = new Server({
+    maxHttpBufferSize: 3e8,
     cors: {
         origin: "http://localhost:3000"
     }
@@ -29,10 +30,8 @@ io.on("connect", (main: Socket) => {
         }
 
         const serversIn = servers.filter(e => {
-            e.users.some(user => user.name === username) || e.owner.some(user => user.name === username);
+            return (e.users.some(user => user.name == username) || e.owner.some(user => user.name == username));
         })
-
-        console.log(serversIn)
 
         serversIn.forEach(e => {
             main.join(e.id.toString(10))
@@ -43,8 +42,8 @@ io.on("connect", (main: Socket) => {
         io.to(id).emit("loginSuccess", {user: user, servers: serversIn});
     })
 
-    main.on("createServer", (data: {serverName: string, serverDescription: string}) => {
-        const {serverName, serverDescription} = data;
+    main.on("createServer", (data: {serverName: string, serverDescription: string, serverIcon: string}) => {
+        const {serverName, serverDescription, serverIcon} = data;
         const id = main.id
 
         if(!socketExists(id)){
@@ -53,7 +52,7 @@ io.on("connect", (main: Socket) => {
         }
 
         const owner = users.find(e => e.socketId == id)!
-        const server = new CustomServer(serverName, serverDescription, owner);
+        const server = new CustomServer(serverName, serverDescription, owner, serverIcon);
 
         servers.push(server)
 
@@ -116,7 +115,6 @@ io.on("connect", (main: Socket) => {
         const serverFound = servers.find(s => s.id == serverId);
 
         if(!serverFound){
-            console.log("Server not found")
             main.to(id).emit("messageServerError", "Error occurred while messaging channel.");
             return;
         }
@@ -124,7 +122,6 @@ io.on("connect", (main: Socket) => {
         const channelFound = serverFound.channels.find(s => s.id == channelId);
 
         if(!channelFound){
-            console.log("Channel not found")
             main.to(id).emit("messageServerError", "Error occurred while messaging channel.");
             return;
         }

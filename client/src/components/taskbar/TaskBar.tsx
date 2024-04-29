@@ -9,15 +9,23 @@ import LoginForm from "@/components/taskbar/login/LoginForm";
 import AddChannelForm from "@/components/channel/AddChannelForm";
 
 export default function TaskBar(){
-    const {servers, currentServer, isLoggedIn, changeChannel } = useSocket()
+    const {servers, currentServer, currentChannel, isLoggedIn, changeChannel } = useSocket()
     const {handleShow} = useOverlay()
     const [loginUsername, setLoginUsername] = useState("")
 
     return (
         <div id="taskbar">
             <div id="channels">
-                {servers[currentServer] && servers[currentServer].channels && servers[currentServer].channels.map((channel) => (
-                    <Button key={channel.name} className="channel" id={channel.id.toString(10)} onClick={() => {changeChannel(channel.id)}}>{channel.name}</Button>
+                {servers[currentServer] && servers[currentServer].channels && servers[currentServer].channels.map((channel, index) => (
+                    <Button
+                        key={`${channel.name}-${channel.id.toString(10)}`}
+                        className="channel"
+                        id={channel.id.toString(10)}
+                        onClick={() => {changeChannel(channel.id)}}
+                        style={{ backgroundColor: currentChannel == index ? 'rgba(128, 128, 128, .5)' : 'transparent' }}
+                    >
+                        # {channel.name}
+                    </Button>
                 ))}
                 <Button variant="primary" onClick={() => handleShow(<AddChannelForm/>)}>Add channel</Button>
             </div>

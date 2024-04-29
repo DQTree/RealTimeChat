@@ -6,10 +6,11 @@ import {socket} from "@/components/socket";
 import {CustomChannel} from "@/components/domain/CustomChannel";
 import {User} from "@/components/domain/User";
 import {Message} from "@/components/domain/Message";
+import {string} from "prop-types";
 
 interface SocketContextType {
     login: (username: string) => void;
-    createServer: (serverName: string, serverDescription: string) => void;
+    createServer: (serverName: string, serverDescription: string, serverIcon: string) => void;
     joinServer: (serverName: string) => void;
     createChannel: (channelName: string, channelDescription: string) => void;
     messageServer: (message: string) => void;
@@ -34,8 +35,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socket.emit("login", username);
     }
 
-    function createServer(serverName: string, serverDescription: string){
-        socket.emit("createServer", {serverName: serverName, serverDescription: serverDescription});
+    function createServer(serverName: string, serverDescription: string, serverIcon: string){
+        socket.emit("createServer", {serverName: serverName, serverDescription: serverDescription, serverIcon: serverIcon});
     }
 
     function joinServer(serverName: string){
@@ -56,7 +57,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     function changeServer(serverId: number) {
         const server = servers.findIndex(s => s.id === serverId)
-        console.log(server)
         setCurrentServer(server);
     }
 
@@ -84,9 +84,11 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
         function onCreateChannelSuccess(data: {serverId: number, channel: CustomChannel}) {
             const {serverId, channel} = data;
+
             setServers(prev => {
                 return prev.map(server => {
                     if (server.id === serverId) {
+                        setCurrentChannel(server.channels.length-1);
                         return {
                             ...server,
                             channels: [...server.channels, channel]
@@ -95,13 +97,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
                     return server;
                 });
             });
-            setCurrentChannel(channel.id);
         }
 
         function onMemberJoinSuccess(data: {user: User, serverId: number}){
             const {user, serverId} = data
-
-            console.log(user)
 
             setServers(prev => {
                 return prev.map(server => {
@@ -138,8 +137,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             });
         }
 
-        function onLeaveServerSuccess(response: string) {
-            alert(response)
+        function onLeaveServerSuccess(serverId: number) {
+            setServers(prevState => {
+                return prevState.filter(s => s.id != serverId);
+            })
         }
 
         socket.on("loginSuccess", onLoginSuccess)

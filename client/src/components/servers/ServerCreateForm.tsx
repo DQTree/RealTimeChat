@@ -4,12 +4,14 @@ import Button from "react-bootstrap/Button";
 import {useOverlay} from "@/components/context/OverlayContext";
 import {useSocket} from "@/components/context/SocketContext";
 import {useState} from "react";
+import ImageCropper from "@/components/image/ImageCropper";
 
 export default function ServerCreateForm() {
     const { handleClose } = useOverlay()
     const {createServer, joinServer} = useSocket()
     const [serverName, setServerName] = useState('');
     const [serverDescription, setServerDescription] = useState('');
+    const [serverIcon, setServerIcon] = useState('');
 
     return(
         <>
@@ -37,13 +39,14 @@ export default function ServerCreateForm() {
                             onChange={(e) => setServerDescription(e.target.value)}
                         />
                     </Form.Group>
+                    <ImageCropper setServerIcon={setServerIcon}></ImageCropper>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={() => createServer(serverName, serverDescription)}>
+                <Button variant="primary" onClick={() => createServer(serverName, serverDescription, serverIcon)}>
                     Create
                 </Button>
                 <Button variant="primary" onClick={() => joinServer(serverName)}>

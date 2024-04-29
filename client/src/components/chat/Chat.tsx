@@ -7,7 +7,7 @@ export default function Chat() {
     const [chatMessage, setChatMessage] = useState<string>('')
 
     function handleKeyDown(event: { key: string; }) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && chatMessage != '') {
             messageServer(chatMessage)
             setChatMessage('')
         }
@@ -17,7 +17,7 @@ export default function Chat() {
         <div id="chat">
             <div id="messages">
                 {servers[currentServer] && servers[currentServer].channels[currentChannel] && servers[currentServer].channels[currentChannel].messages.map((message, index) => (
-                    <div key={index}>
+                    <div key={`${message.author}-${index}`}>
                         {message.author}: {message.message}
                     </div>
                 ))}
