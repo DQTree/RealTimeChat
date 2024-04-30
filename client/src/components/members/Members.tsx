@@ -7,8 +7,8 @@ export default function Members() {
     return(
         <div id="members">
             {servers[currentServer] && servers[currentServer].users.map((user) => (
-                <div id="member" key={user.name}>
-                    {user.name}:
+                <div id="member">
+                    {user.username}:
                 </div>
             ))}
         </div>

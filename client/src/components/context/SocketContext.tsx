@@ -2,14 +2,12 @@
 
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {CustomServer} from "@/components/domain/CustomServer";
-import {socket} from "@/components/socket";
 import {CustomChannel} from "@/components/domain/CustomChannel";
 import {User} from "@/components/domain/User";
 import {Message} from "@/components/domain/Message";
-import {string} from "prop-types";
+import {io} from "socket.io-client";
 
 interface SocketContextType {
-    login: (username: string) => void;
     createServer: (serverName: string, serverDescription: string, serverIcon: string) => void;
     joinServer: (serverName: string) => void;
     createChannel: (channelName: string, channelDescription: string) => void;
@@ -19,28 +17,28 @@ interface SocketContextType {
     changeChannel: (channelId: number) => void;
     currentServer: number;
     currentChannel: number;
-    isLoggedIn: User | undefined;
     servers: CustomServer[];
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
+const API_URL = 'http://localhost:4000';
+const socket = io(API_URL, {
+    withCredentials: true
+});
+
 export function SocketProvider({ children }: { children: ReactNode }) {
-    const [isLoggedIn, setIsLoggedIn] = useState<User | undefined>(undefined);
+
     const [servers, setServers] = useState<CustomServer[]>([])
     const [currentServer, setCurrentServer] = useState(0);
     const [currentChannel, setCurrentChannel] = useState(0);
-
-    function login(username: string){
-        socket.emit("login", username);
-    }
 
     function createServer(serverName: string, serverDescription: string, serverIcon: string){
         socket.emit("createServer", {serverName: serverName, serverDescription: serverDescription, serverIcon: serverIcon});
     }
 
     function joinServer(serverName: string){
-        socket.emit("joinServer", {username: isLoggedIn!.name, serverName: serverName});
+        socket.emit("joinServer", {serverName: serverName});
     }
 
     function createChannel(channelName: string, channelDescription: string){
@@ -66,18 +64,14 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
 
     useEffect(() => {
-        function onLoginSuccess(data: {user: User, servers: CustomServer[]}) {
-            const {user, servers} = data
-            setIsLoggedIn(user)
-            setServers(servers)
-        }
-
         function onCreateServerSuccess(server: CustomServer) {
+            console.log(server)
             setServers(prev => [...prev, server]);
             setCurrentServer(servers.length-1)
         }
 
         function onJoinServerSuccess(server: CustomServer) {
+            console.log(server)
             setServers(prev => [...prev, server]);
             setCurrentServer(servers.length-1)
         }
@@ -143,7 +137,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             })
         }
 
-        socket.on("loginSuccess", onLoginSuccess)
         socket.on("createServerSuccess", onCreateServerSuccess)
         socket.on("joinServerSuccess", onJoinServerSuccess)
         socket.on("memberJoined", onMemberJoinSuccess)
@@ -152,7 +145,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socket.on("leaveServerSuccess", onLeaveServerSuccess)
 
         return () => {
-            socket.off("loginSuccess", onLoginSuccess)
             socket.off("createServerSuccess", onCreateServerSuccess)
             socket.off("joinServerSuccess", onJoinServerSuccess)
             socket.off("memberJoined", onMemberJoinSuccess)
@@ -165,7 +157,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     return (
         <SocketContext.Provider
             value={{
-                login,
                 createServer,
                 joinServer,
                 createChannel,
@@ -175,7 +166,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
                 currentServer,
                 currentChannel,
                 changeChannel,
-                isLoggedIn,
                 servers
             }}
         >

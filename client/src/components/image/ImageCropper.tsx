@@ -34,6 +34,10 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
 
     const onUpdate = () => {
         previewRef.current?.refresh();
+        const canvas = cropperRef.current?.getCanvas();
+        if (canvas) {
+            setServerIcon(canvas.toDataURL())
+        }
     };
 
     const onSave = () => {
@@ -84,9 +88,9 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
                 */}
             </div>
             <input type='file' accept="image/*" onChange={handleFileChange}/>
-            <button onClick={onClear}>Clear</button>
+            {/*<button onClick={onClear}>Clear</button>*/}
             {/*<button onClick={onSave}>Save</button>*/}
-            <button onClick={e => onOk(e)}>Set</button>
+            {/*<button onClick={e => onOk(e)}>Set</button>*/}
         </div>
     );
 };

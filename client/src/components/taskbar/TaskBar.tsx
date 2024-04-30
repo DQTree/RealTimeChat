@@ -1,20 +1,29 @@
 import {useSocket} from "@/components/context/SocketContext";
 
 import './taskbar.css'
-import {useState} from "react";
 import {useOverlay} from "@/components/context/OverlayContext";
 
 import Button from 'react-bootstrap/Button';
-import LoginForm from "@/components/taskbar/login/LoginForm";
 import AddChannelForm from "@/components/channel/AddChannelForm";
+import {useAuth} from "@/components/context/AuthContext";
 
 export default function TaskBar(){
-    const {servers, currentServer, currentChannel, isLoggedIn, changeChannel } = useSocket()
+    const {servers, currentServer, currentChannel, changeChannel } = useSocket()
     const {handleShow} = useOverlay()
-    const [loginUsername, setLoginUsername] = useState("")
 
     return (
         <div id="taskbar">
+            <div id="server">
+                {servers[currentServer] && <div id="server-card">
+                    <h1 id="server-card-name">
+                        {servers[currentServer].name}
+                    </h1>
+                    <h2 id="server-card-description">
+                        {servers[currentServer].description}
+                    </h2>
+                </div>
+                }
+            </div>
             <div id="channels">
                 {servers[currentServer] && servers[currentServer].channels && servers[currentServer].channels.map((channel, index) => (
                     <Button
@@ -30,10 +39,10 @@ export default function TaskBar(){
                 <Button variant="primary" onClick={() => handleShow(<AddChannelForm/>)}>Add channel</Button>
             </div>
             <div id="userbar">
-                {!isLoggedIn ? <Button variant="primary" onClick={() => handleShow(<LoginForm/>)}>
+                {/* !isLoggedIn ? <Button variant="primary" onClick={() => handleShow(<LoginForm/>)}>
                     Login
-                </Button> : <div id="user">{isLoggedIn.name}</div>
-                }
+                </Button> : <div id="user">{isLoggedIn.name}</div>*/}
+                <div id="user"></div>
             </div>
         </div>
     )

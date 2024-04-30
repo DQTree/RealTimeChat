@@ -1,8 +1,10 @@
 export class User {
-    name: string
-    socketId: string
-    constructor(name: string, socketId: string) {
-        this.name = name
-        this.socketId = socketId
+    username: string
+    email: string
+    password: string
+    constructor(username: string, email: string, password: string) {
+        this.username = username
+        this.email = email
+        this.password = password
     }
 }

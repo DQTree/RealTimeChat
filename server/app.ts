@@ -1,57 +1,108 @@
-import express from 'express';
-import http from 'http';
 import {Server, Socket} from 'socket.io';
 import {Message} from "./domain/Message";
 import {CustomServer} from "./domain/CustomServer";
 import {User} from "./domain/User";
 import {CustomChannel} from "./domain/CustomChannel";
-
-const app = express();
-const server = http.createServer(app);
-const io = new Server({
-    maxHttpBufferSize: 3e8,
-    cors: {
-        origin: "http://localhost:3000"
-    }
-});
+import express from "express";
+import {createServer} from "http";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import * as bcrypt from "bcrypt"
 
 const users: User[] = [];
 let servers: CustomServer[] = [];
 
+const app = express()
+const httpServer = createServer(app)
+const io = new Server(httpServer,{
+    maxHttpBufferSize: 3e8,
+    cors: {
+        origin: "http://localhost:3000",
+        credentials: true
+    },
+});
+
+app.use(bodyParser.json())
+app.use(cookieParser())
+
+app.post('/api/register', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User(username, email, hashedPassword);
+
+        if (!users.some((u) => u.username == user.username)) {
+            users.push(user);
+            res.cookie('loggedInUser', user.username, { maxAge: 900000, httpOnly: true, secure: true });
+            res.status(201).send({ message: 'Account created', user: user });
+        } else {
+            res.status(400).send({ message: 'Username already exists' });
+        }
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+});
+
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = users.find((u) => u.username == username);
+
+        if (user) {
+            const passwordMatch = await bcrypt.compare(password, user.password);
+
+            if (passwordMatch) {
+                res.cookie('loggedInUser', user.username, { maxAge: 900000, httpOnly: true, secure: true });
+
+                res.status(200).send({ message: 'Login successful', user: user });
+            } else {
+                res.status(401).send({ message: 'Incorrect password' });
+            }
+        } else {
+            res.status(404).send({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
+});
+
+app.post('/api/logout', (req, res) => {
+    res.clearCookie('loggedInUser');
+    res.status(200).send({ message: 'Logout successful' });
+});
+
+io.use((socket, next) => {
+    const cookies = socket.request.headers.cookie;
+
+    if (cookies) {
+        const cookieArray = cookies.split(';');
+        for (const cookie of cookieArray) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'loggedInUser') {
+                socket.data = value;
+                break;
+            }
+        }
+    }
+
+    next()
+});
+
+
 io.on("connect", (main: Socket) => {
     console.log(`Client connected to main`);
-
-
-    main.on("login", (username: string) => {
-        const id = main.id
-
-        if(!userExists(username) || !socketExists(id)){
-           users.push(new User(username, main.id))
-        }
-
-        const serversIn = servers.filter(e => {
-            return (e.users.some(user => user.name == username) || e.owner.some(user => user.name == username));
-        })
-
-        serversIn.forEach(e => {
-            main.join(e.id.toString(10))
-        })
-
-        const user = users.find(e => e.name == username)!
-
-        io.to(id).emit("loginSuccess", {user: user, servers: serversIn});
-    })
 
     main.on("createServer", (data: {serverName: string, serverDescription: string, serverIcon: string}) => {
         const {serverName, serverDescription, serverIcon} = data;
         const id = main.id
 
-        if(!socketExists(id)){
-            main.to(id).emit("createServerError", "Error occurred while creating server");
-            return
-        }
+        const username = main.data
 
-        const owner = users.find(e => e.socketId == id)!
+        const owner = users.find(e => e.username == username)!
         const server = new CustomServer(serverName, serverDescription, owner, serverIcon);
 
         servers.push(server)
@@ -60,18 +111,19 @@ io.on("connect", (main: Socket) => {
         io.to(id).emit("createServerSuccess", server);
     })
 
-    main.on("joinServer", (data: { username: string, serverName: string }) => {
-        const {username, serverName} = data
+    main.on("joinServer", (data: {serverName: string }) => {
+        const {serverName} = data
         const id = main.id
+        const username = main.data
 
-        const serverFound = servers.find(s => s.name == serverName)
+        const serverFound = servers.find(s => s.name == serverName && !s.users.some((u) => u.username == serverName));
 
         if(!serverFound){
             main.to(id).emit("joinServerError", "Error occurred while joining server");
             return;
         }
 
-        const userJoined = users.find(e => e.name == username)!
+        const userJoined = users.find(e => e.username == username)!
 
         servers.forEach(s => {
             if(s.id == serverFound.id){
@@ -111,6 +163,7 @@ io.on("connect", (main: Socket) => {
     main.on("messageServer", (data: {serverId: number, channelId: number, message: string}) => {
         const id = main.id
         const {serverId, channelId, message} = data
+        const username = main.data
 
         const serverFound = servers.find(s => s.id == serverId);
 
@@ -126,8 +179,8 @@ io.on("connect", (main: Socket) => {
             return;
         }
 
-        const user = users.find(e => e.socketId == id)!
-        const newMessage = new Message(user.name, message)
+        const user = users.find(e => e.username == username)!
+        const newMessage = new Message(user.username, message)
 
         servers.forEach(s => {
             if(s.id == serverId){
@@ -161,16 +214,8 @@ io.on("connect", (main: Socket) => {
         console.log(`Client disconnected from main`);
     })
 
-    function userExists(username: string){
-        return users.some(e => e.name === username)
-    }
-
-    function socketExists(id: string){
-        return users.some(e => e.socketId === id);
-    }
-
 })
 
 // Start the server
 const PORT = 4000;
-io.listen(PORT);
+httpServer.listen(PORT);
