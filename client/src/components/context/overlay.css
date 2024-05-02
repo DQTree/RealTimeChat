@@ -1,13 +1,6 @@
-.modal {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(128, 128, 128, .4);
-    align-content: center;
-    text-align: -webkit-center;
-}
-
-.modal-dialog {
-    background: gray;
-    width: fit-content;
+.dialog-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
 }

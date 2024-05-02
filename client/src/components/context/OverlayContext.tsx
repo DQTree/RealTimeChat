@@ -1,21 +1,21 @@
-import {createContext, ReactNode, useContext, useState} from "react";
+import {createContext, ReactElement, ReactNode, useContext, useState} from "react";
 
 import './overlay.css'
-import Modal from "react-bootstrap/Modal";
+import { Dialog } from "@mui/material";
 
 interface OverlayContextType {
     handleClose: () => void;
-    handleShow: (modal: ReactNode) => void;
+    handleShow: (modal: ReactElement) => void;
 }
 
 const OverlayContext = createContext<OverlayContextType | undefined>(undefined);
 
 export function OverlayProvider({ children }: { children: ReactNode }) {
     const [show, setShow] = useState(false);
-    const [modal, setModal] = useState<ReactNode>(null);
+    const [modal, setModal] = useState<ReactElement>();
 
     const handleClose = () => setShow(false);
-    const handleShow = (modal: ReactNode) => {
+    const handleShow = (modal: ReactElement) => {
         setModal(modal);
         setShow(true)
     };
@@ -27,14 +27,13 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
                 handleShow
             }}
         >
-            <Modal
-                show={show}
-                onHide={handleClose}
-                backdrop="static"
-                keyboard={false}
+            <Dialog
+                className="dialog-box"
+                open={show}
+                onClose={handleClose}
             >
                 {modal}
-            </Modal>
+            </Dialog>
             {children}
         </OverlayContext.Provider>
     )

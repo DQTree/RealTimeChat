@@ -1,10 +1,8 @@
-import Modal from "react-bootstrap/Modal";
-import {Form} from "react-bootstrap";
-import Button from "react-bootstrap/Button";
 import {useOverlay} from "@/components/context/OverlayContext";
 import {useSocket} from "@/components/context/SocketContext";
 import {useState} from "react";
 import ImageCropper from "@/components/image/ImageCropper";
+import {Button, Container, Modal, TextField} from "@mui/material";
 
 export default function ServerCreateForm() {
     const { handleClose } = useOverlay()
@@ -13,46 +11,46 @@ export default function ServerCreateForm() {
     const [serverDescription, setServerDescription] = useState('');
     const [serverIcon, setServerIcon] = useState('');
 
-    return(
-        <>
-            <Modal.Header closeButton>
-                <Modal.Title>Create server</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicName">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
+    const handleCreateServer = () => {
+        createServer(serverName, serverDescription, serverIcon);
+        handleClose();
+    };
+
+    return (
+        <Container maxWidth="sm">
+            <div>
+                <div>
+                    <h2>Create server</h2>
+                    <Button onClick={handleClose}>Close</Button>
+                </div>
+                <div>
+                    <form>
+                        <TextField
                             type="text"
+                            label="Name"
                             placeholder="Enter name"
                             value={serverName}
                             onChange={(e) => setServerName(e.target.value)}
+                            fullWidth
                         />
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicDescription">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control
+                        <TextField
                             type="text"
+                            label="Description"
                             placeholder="Enter description"
                             value={serverDescription}
                             onChange={(e) => setServerDescription(e.target.value)}
+                            fullWidth
                         />
-                    </Form.Group>
-                    <ImageCropper setServerIcon={setServerIcon}></ImageCropper>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={() => createServer(serverName, serverDescription, serverIcon)}>
-                    Create
-                </Button>
-                <Button variant="primary" onClick={() => joinServer(serverName)}>
-                    Join
-                </Button>
-            </Modal.Footer>
-        </>
-    )
+                        <ImageCropper setServerIcon={setServerIcon} />
+                        <Button variant="contained" color="primary" onClick={handleCreateServer}>
+                            Create
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={() => joinServer(serverName)}>
+                            Join
+                        </Button>
+                    </form>
+                </div>
+            </div>
+        </Container>
+    );
 }

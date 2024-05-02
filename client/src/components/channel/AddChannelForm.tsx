@@ -1,10 +1,7 @@
-import Modal from "react-bootstrap/Modal";
-import {Form} from "react-bootstrap";
-import Button from "react-bootstrap/Button";
 import {useState} from "react";
 import {useOverlay} from "@/components/context/OverlayContext";
 import {useSocket} from "@/components/context/SocketContext";
-import {channel} from "node:diagnostics_channel";
+import {Button, Container, Modal, TextField} from "@mui/material";
 
 export default function AddChannelForm() {
     const { handleClose } = useOverlay()
@@ -12,42 +9,42 @@ export default function AddChannelForm() {
     const [channelName, setChannelName] = useState("");
     const [channelDescription, setChannelDescription] = useState("");
 
-    return(
-        <>
-            <Modal.Header closeButton>
-                <Modal.Title>Create channel</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicName">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
+    const handleCreateChannel = () => {
+        createChannel(channelName, channelDescription);
+        handleClose();
+    };
+
+    return (
+        <Container maxWidth="sm">
+            <div>
+                <div>
+                    <h2>Create channel</h2>
+                    <Button onClick={handleClose}>Close</Button>
+                </div>
+                <div>
+                    <form>
+                        <TextField
                             type="text"
+                            label="Name"
                             placeholder="Enter name of the channel"
                             value={channelName}
                             onChange={(e) => setChannelName(e.target.value)}
+                            fullWidth
                         />
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicDescription">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control
+                        <TextField
                             type="text"
+                            label="Description"
                             placeholder="Enter description of the channel"
                             value={channelDescription}
                             onChange={(e) => setChannelDescription(e.target.value)}
+                            fullWidth
                         />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={() => createChannel(channelName, channelDescription)}>
-                    Create
-                </Button>
-            </Modal.Footer>
-        </>
-    )
+                        <Button variant="contained" color="primary" onClick={handleCreateChannel}>
+                            Create
+                        </Button>
+                    </form>
+                </div>
+            </div>
+        </Container>
+    );
 }

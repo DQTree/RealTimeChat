@@ -3,9 +3,9 @@ import {useSocket} from "@/components/context/SocketContext";
 import './taskbar.css'
 import {useOverlay} from "@/components/context/OverlayContext";
 
-import Button from 'react-bootstrap/Button';
 import AddChannelForm from "@/components/channel/AddChannelForm";
 import {useAuth} from "@/components/context/AuthContext";
+import {Button} from "@mui/material";
 
 export default function TaskBar(){
     const {servers, currentServer, currentChannel, changeChannel } = useSocket()
@@ -36,7 +36,7 @@ export default function TaskBar(){
                         # {channel.name}
                     </Button>
                 ))}
-                <Button variant="primary" onClick={() => handleShow(<AddChannelForm/>)}>Add channel</Button>
+                <Button onClick={() => handleShow(<AddChannelForm/>)}>Add channel</Button>
             </div>
             <div id="userbar">
                 {/* !isLoggedIn ? <Button variant="primary" onClick={() => handleShow(<LoginForm/>)}>

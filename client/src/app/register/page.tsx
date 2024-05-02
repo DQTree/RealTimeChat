@@ -1,11 +1,9 @@
 'use client'
 
 import React, {FormEvent, useState} from "react";
-import {Form} from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import {useSocket} from "@/components/context/SocketContext";
 import {redirect} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
+import {Button, Container, FormGroup, TextField} from "@mui/material";
 
 export default function Register() {
     const {register, isLoggedIn} = useAuth()
@@ -27,44 +25,49 @@ export default function Register() {
         setPassword('');
     };
 
-    return(
-        <div id="login">
-            <Form onSubmit={e => handleSubmit(e)}>
-                <Form.Group controlId="formBasicText">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Enter email"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </Form.Group>
-                <Form.Group controlId="formBasicEmail">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </Form.Group>
-                <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </Form.Group>
+    return (
+        <Container maxWidth="xs">
+            <div id="registration">
+                <form onSubmit={handleSubmit}>
+                    <FormGroup>
+                        <TextField
+                            type="text"
+                            label="Username"
+                            placeholder="Enter username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            fullWidth
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <TextField
+                            type="email"
+                            label="Email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            fullWidth
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <TextField
+                            type="password"
+                            label="Password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            fullWidth
+                        />
+                    </FormGroup>
 
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        </div>
-    )
+                    <Button variant="contained" color="primary" type="submit">
+                        Submit
+                    </Button>
+                </form>
+            </div>
+        </Container>
+    );
 }

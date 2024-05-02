@@ -6,19 +6,15 @@
 }
 
 .server {
-    width: 3.2rem;
-    height: 3.2rem;
-    margin: 0.5rem;
-    background-color: grey;
-    border-radius: 32px;
+    height: 4rem;
+    margin: 0.4rem;
     transition: ease-out 0.2s;
-    border: transparent;
-    text-align: center;
-    align-content: center;
+    border-radius: 32px;
+    background: rgba(32, 32, 32, 1);
 }
 
 .server img {
-    width: 3.2rem;
+    width: 4rem;
     border-radius: 32px;
 }
 

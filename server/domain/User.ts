@@ -1,4 +1,13 @@
+
+let serialUser = 0
+
+function setAndIncrementUserID(){
+    serialUser += 1
+    return serialUser
+}
+
 export class User {
+    id: number = setAndIncrementUserID()
     username: string
     email: string
     password: string

@@ -1,11 +1,11 @@
 'use client'
 
 import React, {FormEvent, useEffect, useState} from "react";
-import {Form} from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import {useSocket} from "@/components/context/SocketContext";
 import {redirect} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
+
+import './page.css'
+import {Button, Container, FormGroup, TextField} from "@mui/material";
 
 export default function Login() {
     const {login, isLoggedIn} = useAuth()
@@ -26,40 +26,38 @@ export default function Login() {
     };
 
     useEffect(() => {
-        if (isLoggedIn) {
-            redirect('/chat');
-        }
+        if (isLoggedIn) redirect('/chat');
     }, [isLoggedIn]);
 
-    return(
-        <div id="login">
-            <Form onSubmit={e => handleSubmit(e)}>
-                <Form.Group controlId="formBasicUsername">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Enter username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </Form.Group>
+    return (
+        <Container maxWidth="xs">
+            <div id="login">
+                <form onSubmit={handleSubmit}>
+                    <FormGroup className="mb-3">
+                        <TextField
+                            type="text"
+                            label="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            fullWidth
+                        />
+                    </FormGroup>
 
-                <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </Form.Group>
+                    <FormGroup className="mb-3">
+                        <TextField
+                            type="password"
+                            label="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            fullWidth
+                        />
+                    </FormGroup>
 
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        </div>
-    )
+                    <Button variant="contained" color="primary" type="submit">Login</Button>
+                </form>
+            </div>
+        </Container>
+    );
 }
