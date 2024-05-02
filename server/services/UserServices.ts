@@ -4,6 +4,7 @@ import {UserDomain} from "../configs/UserDomain";
 import {UserLoginInputModel} from "../domain/user/input/UserLoginInputModel";
 import {UserRegisterInputModel} from "../domain/user/input/UserRegisterInputModel";
 import {UserRepositoryInterface} from "../repository/user/UserRepositoryInterface";
+import {User} from "../domain/User";
 
 class UserServices {
     private repo: UserRepositoryInterface
@@ -40,6 +41,9 @@ class UserServices {
     }
     async checkAuth(token: string): Promise<Credentials | null> {
         return await this.domain.validateToken(token)
+    }
+    async getUserByUsername(username: string): Promise<User | undefined> {
+        return await this.repo.getUserByUsername(username)
     }
 }
 

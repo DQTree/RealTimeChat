@@ -3,7 +3,8 @@ import {Message} from "../../domain/Message";
 import {CustomServer} from "../../domain/CustomServer";
 import {User} from "../../domain/User";
 
-class ServerRepository implements ServerRepositoryInterface {
+class ServerDataMem implements ServerRepositoryInterface {
+    servers: CustomServer[] = []
 
     addMessageToChannel(serverId: number, channelId: number, message: Message): Promise<boolean> {
         return Promise.resolve(false);
@@ -30,3 +31,5 @@ class ServerRepository implements ServerRepositoryInterface {
     }
 
 }
+
+export default ServerDataMem
