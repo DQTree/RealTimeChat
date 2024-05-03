@@ -7,7 +7,7 @@ import {CustomChannel} from "../../domain/CustomChannel";
 class ServerDataMem implements ServerRepositoryInterface {
     servers: CustomServer[] = []
 
-    async messageChannel(serverId: number, channelId: number, message: Message): Promise<Message | undefined> {
+    async messageChannel(serverId: number, channelId: number, message: Message): Promise<Message> {
         this.servers.forEach(s => {
             if(s.id == serverId){
                 s.channels.forEach(channel => {
@@ -21,21 +21,17 @@ class ServerDataMem implements ServerRepositoryInterface {
         return undefined
     }
 
-    async createServer(serverName: string, serverDescription: string, owner: User, icon?: string): Promise<CustomServer | undefined> {
+    async createServer(serverName: string, serverDescription: string, owner: UserProfile, icon?: string): Promise<CustomServer> {
         const server = new CustomServer(serverName, serverDescription, owner);
         this.servers.push(server);
         return server;
     }
 
-    async getServerById(id: number): Promise<CustomServer | undefined> {
+    async getServerById(id: number): Promise<CustomServer> {
         return this.servers.find(server => server.id == id);
     }
 
-    async getServerByName(name: string): Promise<CustomServer | undefined> {
-        return this.servers.find(server => server.name == name);
-    }
-
-    async addUserToServer(serverId: number, user: User): Promise<CustomServer | undefined> {
+    async addUserToServer(serverId: number, user: UserProfile): Promise<CustomServer> {
         const server = this.servers.find(server => server.id === serverId);
         if (!server) return undefined;
         if (server.users.some(e => e.id == user.id)) return undefined;
@@ -48,20 +44,20 @@ class ServerDataMem implements ServerRepositoryInterface {
         return undefined;
     }
 
-    async leaveServer(serverId: number, userId: number): Promise<boolean> {
+    async leaveServer(serverId: number, user: UserProfile): Promise<number> {
         const server = this.servers.find(server => server.id === serverId);
         if (!server) return false;
-        if (!server.users.some(e => e.id == userId)) return false;
+        if (!server.users.some(e => e.id == user.id)) return false;
         for (const srv of this.servers) {
             if (srv.id == serverId) {
-                srv.users = srv.users.filter(user => user.id !== userId);
+                srv.users = srv.users.filter(user => user.id !== user.id);
                 return true;
             }
         }
         return false;
     }
 
-    async channelExists(serverId: number, channelId: number): Promise<CustomChannel | undefined> {
+    async channelExists(serverId: number, channelId: number): Promise<boolean> {
         const server = this.servers.find(s => s.id === serverId);
         if (server) {
             for (const channel of server.channels) {
@@ -73,7 +69,7 @@ class ServerDataMem implements ServerRepositoryInterface {
         return undefined;
     }
 
-    async createChannel(serverId: number, channelName: string, channelDescription: string): Promise<CustomChannel | undefined> {
+    async createChannel(serverId: number, channelName: string, channelDescription: string): Promise<CustomChannel> {
         for (const server of this.servers) {
             if (server.id === serverId) {
                 const channel = new CustomChannel(channelName, channelDescription);
@@ -84,7 +80,7 @@ class ServerDataMem implements ServerRepositoryInterface {
         return undefined;
     }
 
-    async serverExists(serverId: number): Promise<CustomServer | undefined> {
+    async serverExists(serverId: number): Promise<boolean> {
         for (const s of this.servers) {
             if (s.id == serverId) {
                 return s

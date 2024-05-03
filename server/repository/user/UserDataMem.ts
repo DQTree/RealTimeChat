@@ -2,7 +2,7 @@ import {UserRepositoryInterface} from "./UserRepositoryInterface";
 import {User} from "../../domain/user/User";
 
 class UserDataMem implements UserRepositoryInterface {
-    users: User[] = []
+    users: UserProfile[] = []
 
     async createUser(username: string, password: string, email: string): Promise<number | undefined> {
         const id = this.users.length + 1;

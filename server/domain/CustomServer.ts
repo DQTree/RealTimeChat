@@ -11,12 +11,12 @@ function setAndIncrementServerID(){
 export class CustomServer {
     id: number = setAndIncrementServerID()
     name: string
-    owner: User[]
+    owner: UserProfile[]
     channels: CustomChannel[]
-    users: User[]
+    users: UserProfile[]
     icon: string = ""
     description: string
-    constructor(serverName: string, description: string, owner: User, icon?: string) {
+    constructor(serverName: string, description: string, owner: UserProfile, icon?: string) {
         this.name = serverName
         this.owner = [owner]
         this.channels = [new CustomChannel("general", "First channel")]

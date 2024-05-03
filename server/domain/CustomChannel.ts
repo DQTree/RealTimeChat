@@ -13,8 +13,8 @@ export class CustomChannel {
     name: string
     description: string
     messages: Message[]
-    blacklist: User[]
-    whitelist: User[]
+    blacklist: UserProfile[]
+    whitelist: UserProfile[]
     constructor(channelName: string, description: string) {
         this.name = channelName
         this.description = description

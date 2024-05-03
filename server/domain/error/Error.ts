@@ -1,35 +1,31 @@
-export class NotFoundError extends Error {
+export class HttpError extends Error {
     status: number;
-    constructor(message: string) {
-        super(message);
-        this.name = 'Not Found';
-        this.status = 404;
-    }
-}
-
-export class InternalServerError extends Error {
-    status: number;
-    constructor(message: string) {
-        super(message);
-        this.name = 'Internal Server';
-        this.status = 500;
-    }
-}
-
-export class BadRequestError extends Error {
-    status: number;
-    constructor(message: string) {
-        super(message);
-        this.name = 'Bad request';
-        this.status = 400 ;
-    }
-}
-
-export class Unauthorized extends Error {
-    status: number;
-    constructor(message: string) {
+    constructor(message: string, status: number) {
         super(message)
-        this.name = 'Unauthorized';
-        this.status = 401;
+        this.status = status
+    }
+}
+
+export class NotFoundError extends HttpError {
+    constructor(message = 'Not Found') {
+        super(message, 404)
+    }
+}
+
+export class InternalServerError extends HttpError {
+    constructor(message = 'Internal Server Error'){
+        super(message, 500)
+    }
+}
+
+export class BadRequestError extends HttpError {
+    constructor(message = 'Bad Request Error') {
+        super(message, 400);
+    }
+}
+
+export class Unauthorized extends HttpError {
+    constructor(message = 'Unauthorized') {
+        super(message, 401);
     }
 }
