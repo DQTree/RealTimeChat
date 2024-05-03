@@ -7,7 +7,7 @@ export class UserRegisterInputModel {
 }
 
 export const UserRegisterInputModelValidation = checkSchema({
-    username: { isLength: { options: { min: 6, max: 16 } } },
+    username: { isLength: { options: { min: 1, max: 16 } } },
     email: { isEmail: true },
-    password: { isLength: { options: { min: 6, max: 16 } } },
+    password: { isLength: { options: { min: 1, max: 16 } } },
 });

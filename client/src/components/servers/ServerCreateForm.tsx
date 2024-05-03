@@ -2,7 +2,7 @@ import {useOverlay} from "@/components/context/OverlayContext";
 import {useSocket} from "@/components/context/SocketContext";
 import {useState} from "react";
 import ImageCropper from "@/components/image/ImageCropper";
-import {Button, Container, Modal, TextField} from "@mui/material";
+import {Button, Container, TextField} from "@mui/material";
 
 export default function ServerCreateForm() {
     const { handleClose } = useOverlay()

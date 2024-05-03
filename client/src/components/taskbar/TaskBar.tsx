@@ -4,7 +4,6 @@ import './taskbar.css'
 import {useOverlay} from "@/components/context/OverlayContext";
 
 import AddChannelForm from "@/components/channel/AddChannelForm";
-import {useAuth} from "@/components/context/AuthContext";
 import {Button} from "@mui/material";
 
 export default function TaskBar(){

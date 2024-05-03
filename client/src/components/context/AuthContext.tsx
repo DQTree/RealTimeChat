@@ -1,5 +1,4 @@
 import {createContext, ReactNode, useContext, useState} from "react";
-import {CustomServer} from "@/components/domain/CustomServer";
 
 interface AuthContextType {
     login: (username: string, password: string) => Promise<void>;
@@ -32,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setIsLoggedIn(true);
             } else {
                 const {message} = await response.json();
-                console.error('Login failed: ', message.message);
+                console.error('Login failed: ', message);
                 setIsLoggedIn(false);
             }
         } catch (error) {
@@ -52,11 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (response.ok) {
             const {message} = await response.json();
-            console.log('Register successful: ', message);
             setIsLoggedIn(true);
         }else{
             const {message} = await response.json();
-            console.error('Login failed: ', message.message);
             setIsLoggedIn(false);
         }
     }

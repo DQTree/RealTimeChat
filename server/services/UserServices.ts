@@ -4,18 +4,19 @@ import {UserDomain} from "../configs/UserDomain";
 import {UserLoginInputModel} from "../domain/user/input/UserLoginInputModel";
 import {UserRegisterInputModel} from "../domain/user/input/UserRegisterInputModel";
 import {UserRepositoryInterface} from "../repository/user/UserRepositoryInterface";
-import {User} from "../domain/User";
+import UserRepository from "../repository/user/UserRepository";
+import {User} from "../domain/user/User";
 
 class UserServices {
-    private repo: UserRepositoryInterface
+    private repo: UserRepositoryInterface;
     private domain: UserDomain;
     constructor(repo: UserRepositoryInterface) {
-        this.repo = repo
+        this.repo = repo;
         this.domain = new UserDomain();
     }
     async login(login: UserLoginInputModel): Promise<[string, object]> {
         const user = await this.repo.getUserByUsername(login.username)
-        if(user == null) throw new BadRequestError("User doesnt exist")
+        if(user == undefined) throw new BadRequestError("User doesnt exist")
 
         if(!await this.domain.verifyPassword(login.password, user.password)) throw new BadRequestError("Password doesnt match")
 
@@ -35,16 +36,17 @@ class UserServices {
     */
     async register(register: UserRegisterInputModel): Promise<number> {
         const hashedPassword = await this.domain.hashPassword(register.password)
-        const id =  await this.repo.register(register.username, hashedPassword, register.email)
-        if(id == null) throw new BadRequestError("Something happened while registering")
+        const id =  await this.repo.createUser(register.username, hashedPassword, register.email)
+        if(id == undefined) throw new BadRequestError("Something happened while registering")
         return id
     }
-    async checkAuth(token: string): Promise<Credentials | null> {
+    async checkAuth(token: string): Promise<Credentials | undefined> {
         return await this.domain.validateToken(token)
     }
-    async getUserByUsername(username: string): Promise<User | undefined> {
-        return await this.repo.getUserByUsername(username)
+    async getUserById(id: number): Promise<User | undefined> {
+        return await this.repo.getUserById(id)
     }
 }
+
 
 export default UserServices

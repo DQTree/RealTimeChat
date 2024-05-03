@@ -1,13 +1,15 @@
 import {CustomServer} from "../../domain/CustomServer";
-import {CustomChannel} from "../../domain/CustomChannel";
 import {Message} from "../../domain/Message";
-import {User} from "../../domain/User";
+import {User} from "../../domain/user/User";
+import {CustomChannel} from "../../domain/CustomChannel";
 
 export interface ServerRepositoryInterface {
-    addServer(server: CustomServer): Promise<boolean>;
+    createServer(serverName: string, serverDescription: string, owner: User, icon?: string): Promise<CustomServer | undefined>;
+    createChannel(serverId: number, channelName: string, channelDescription: string): Promise<CustomChannel | undefined>
     getServerByName(name: string): Promise<CustomServer | undefined>;
-    getServerById(id: string): Promise<CustomServer | undefined>;
-    addMessageToChannel(serverId: number, channelId: number, message: Message): Promise<boolean>;
-    joinServer(serverId: number, user: User): Promise<boolean>;
+    serverExists(serverId: number): Promise<CustomServer | undefined>;
+    channelExists(serverId: number, channelId: number): Promise<CustomChannel | undefined>;
+    messageChannel(serverId: number, channelId: number, message: Message): Promise<Message | undefined>;
+    addUserToServer(serverId: number, user: User): Promise<CustomServer | undefined>;
     leaveServer(serverId: number, userId: number): Promise<boolean>;
 }

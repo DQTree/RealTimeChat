@@ -1,5 +1,5 @@
 import {Message} from "./Message";
-import {User} from "./User";
+import {User} from "./user/User";
 
 let serialChannel = 0
 

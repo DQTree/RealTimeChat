@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {useOverlay} from "@/components/context/OverlayContext";
 import {useSocket} from "@/components/context/SocketContext";
-import {Button, Container, Modal, TextField} from "@mui/material";
+import {Button, Container, TextField} from "@mui/material";
 
 export default function AddChannelForm() {
     const { handleClose } = useOverlay()

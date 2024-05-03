@@ -1,7 +1,7 @@
 import {RequestHandler} from "express";
-import UserServices from "../../services/UserServices";
-import {UserRegisterInputModel} from "../../domain/user/input/UserRegisterInputModel";
-import {UserLoginInputModel} from "../../domain/user/input/UserLoginInputModel";
+import {UserLoginInputModel} from "../domain/user/input/UserLoginInputModel";
+import UserServices from "../services/UserServices";
+import {UserRegisterInputModel} from "../domain/user/input/UserRegisterInputModel";
 
 class UserController {
     private services: UserServices;

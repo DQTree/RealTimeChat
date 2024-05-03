@@ -19,12 +19,12 @@ export class UserDomain {
         return sign(payload, secretKey, option);
     }
 
-    async validateToken(token: string): Promise<Credentials | null> {
+    async validateToken(token: string): Promise<Credentials | undefined> {
         try {
             const secretKey: string = process.env.JWT_SECRET || "my-secret";
             return verify(token, secretKey) as Credentials;
         } catch (err) {
-            return null;
+            return undefined;
         }
     }
 

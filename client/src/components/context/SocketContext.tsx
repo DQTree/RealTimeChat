@@ -3,9 +3,9 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {CustomServer} from "@/components/domain/CustomServer";
 import {CustomChannel} from "@/components/domain/CustomChannel";
-import {User} from "@/components/domain/User";
 import {Message} from "@/components/domain/Message";
 import {io} from "socket.io-client";
+import {User} from "@/components/domain/User";
 
 interface SocketContextType {
     createServer: (serverName: string, serverDescription: string, serverIcon: string) => void;

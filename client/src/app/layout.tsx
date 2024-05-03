@@ -2,8 +2,6 @@
 
 import React from "react";
 import './globals.css'
-import {SocketProvider} from "@/components/context/SocketContext";
-import {OverlayProvider} from "@/components/context/OverlayContext";
 import {AuthProvider} from "@/components/context/AuthContext";
 
 export default function RootLayout({children}: {

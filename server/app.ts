@@ -1,26 +1,13 @@
 import {Server, Socket} from 'socket.io';
-import {Message} from "./domain/Message";
-import {CustomServer} from "./domain/CustomServer";
-import {User} from "./domain/User";
-import {CustomChannel} from "./domain/CustomChannel";
 import express from "express";
-import {type Request} from "express"
 import {createServer} from "http";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import * as bcrypt from "bcrypt"
 import session from 'express-session'
-import UserDataMem from "./repository/user/UserDataMem";
-import UserServices from "./services/UserServices";
+import {userRouter, userServices} from "./routes/UserRoutes";
+import {serverServices} from "./routes/ServerRoutes";
 
-declare module "express-session" {
-    interface SessionData {
-        count: number;
-    }
-}
-
-const users: User[] = [];
-let servers: CustomServer[] = [];
+const handlers = require('./controller/ws/SocketHandlers');
 
 const app = express()
 const httpServer = createServer(app)
@@ -42,7 +29,7 @@ const io = new Server(httpServer,{
 
 io.engine.use(sessionMiddleware);
 
-io.use((socket, next) => {
+io.use(async (socket, next) => {
     const cookies = socket.request.headers.cookie;
 
     if (cookies) {
@@ -50,7 +37,7 @@ io.use((socket, next) => {
         for (const cookie of cookieArray) {
             const [name, value] = cookie.trim().split('=');
             if (name === 'loggedInUser') {
-                socket.data = value;
+                socket.data = await userServices.checkAuth(value)
                 break;
             }
         }
@@ -59,178 +46,16 @@ io.use((socket, next) => {
     next()
 });
 
-io.on("connect", (main: Socket) => {
-    console.log(`Client connected to main`);
+const onConnection = (socket: Socket) => {
+    handlers(io, socket, userServices, serverServices);
+}
 
-    const req = main.request as Request;
-    main.join(req.session.id);
-
-    const id = main.id
-    const username = main.data
-
-    main.on("createServer", (data: {serverName: string, serverDescription: string, serverIcon: string}) => {
-        const {serverName, serverDescription, serverIcon} = data;
-
-        const owner = users.find(e => e.username == username)!
-        const server = new CustomServer(serverName, serverDescription, owner, serverIcon);
-
-        servers.push(server)
-
-        main.join(server.id.toString(10));
-        io.to(id).emit("createServerSuccess", server);
-    })
-
-    main.on("joinServer", (data: {serverName: string }) => {
-        const {serverName} = data
-
-        const serverFound = servers.find(s => s.name == serverName && !s.users.some((u) => u.username == username));
-
-        if(!serverFound){
-            main.to(id).emit("joinServerError", "Error occurred while joining server");
-            return;
-        }
-
-        const userJoined = users.find(e => e.username == username)!
-
-        servers.forEach(s => {
-            if(s.id == serverFound.id){
-                s.users.push(userJoined)
-            }
-        })
-
-        main.join(serverFound.id.toString(10));
-        io.to(serverFound.id.toString(10)).emit("memberJoined", {user: userJoined, serverId: serverFound.id});
-        io.to(id).emit("joinServerSuccess", serverFound);
-    })
-
-    main.on("createChannel", (data: {serverId: number, channelName: string, channelDescription: string}) => {
-        const {serverId, channelName, channelDescription} = data;
-
-        const serverFound = servers.find(s => s.id == serverId);
-
-        if(!serverFound){
-            main.to(id).emit("createChannelError", "Error occurred while creating channel.");
-            return;
-        }
-
-        const newChannel = new CustomChannel(channelName, channelDescription)
-
-        servers.forEach(s => {
-            if(s.id == serverId){
-                s.channels.push(newChannel)
-                return;
-            }
-        })
-
-        io.to(serverId.toString(10)).emit("createChannelSuccess", {serverId: serverId, channel: newChannel});
-    })
-
-    main.on("messageServer", (data: {serverId: number, channelId: number, message: string}) => {
-        const {serverId, channelId, message} = data
-
-        const serverFound = servers.find(s => s.id == serverId);
-
-        if(!serverFound){
-            main.to(id).emit("messageServerError", "Error occurred while messaging channel.");
-            return;
-        }
-
-        const channelFound = serverFound.channels.find(s => s.id == channelId);
-
-        if(!channelFound){
-            main.to(id).emit("messageServerError", "Error occurred while messaging channel.");
-            return;
-        }
-
-        const user = users.find(e => e.username == username)!
-        const newMessage = new Message(user.username, message)
-
-        servers.forEach(s => {
-            if(s.id == serverId){
-                s.channels.forEach(channel => {
-                    if(channel.id == channelId){
-                        channel.messages.push(newMessage)
-                        return;
-                    }
-                })
-                return;
-            }
-        })
-
-        io.to(serverId.toString(10)).emit("messageServerSuccess", {serverId: serverId, channelId: channelId, message: newMessage});
-    })
-
-    main.on("leaveServer", (serverId: number) => {
-        const serverFound = servers.find(s => s.id == serverId)
-
-        if(!serverFound){
-            main.to(id).emit("leaveServerError", serverFound);
-            return;
-        }
-
-        main.leave(serverFound.id.toString(10));
-        io.to(id).emit("leaveServerSuccess", "Left successfully");
-    })
-
-    main.on("disconnect", () => {
-        console.log(`Client disconnected from main`);
-    })
-})
+io.on('connection', onConnection)
 
 app.use(sessionMiddleware);
 app.use(bodyParser.json())
 app.use(cookieParser())
-
-app.post('/api/register', async (req, res) => {
-    const { username, email, password } = req.body;
-    const session = req.session
-    const id = session.id
-
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User(username, email, hashedPassword);
-
-        if (!users.some((u) => u.username == user.username)) {
-            users.push(user);
-            res.cookie('loggedInUser', user.username, { maxAge: 900000, httpOnly: true, secure: true });
-            res.status(201).send({ message: 'Account created', user: user });
-        } else {
-            res.status(400).send({ message: 'Username already exists' });
-        }
-    } catch (error) {
-        console.error('Error registering user:', error);
-        res.status(500).send({ message: 'Internal server error' });
-    }
-});
-
-app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const user = users.find((u) => u.username == username);
-
-        if (user) {
-            const passwordMatch = await bcrypt.compare(password, user.password);
-
-            if (passwordMatch) {
-                res.cookie('loggedInUser', user.username, { maxAge: 900000, httpOnly: true, secure: true });
-                res.status(200).send({ message: 'Login successful', user: user });
-            } else {
-                res.status(401).send({ message: 'Incorrect password' });
-            }
-        } else {
-            res.status(404).send({ message: 'User not found' });
-        }
-    } catch (error) {
-        console.error('Error logging in:', error);
-        res.status(500).send({ message: 'Internal server error' });
-    }
-});
-
-app.post('/api/logout', (req, res) => {
-    res.clearCookie('loggedInUser');
-    res.status(200).send({ message: 'Logout successful' });
-});
+app.use('/api', userRouter)
 
 // Start the server
 const PORT = 4000;

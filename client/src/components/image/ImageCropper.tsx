@@ -1,7 +1,7 @@
-import React, {ChangeEvent, MouseEventHandler, useRef, useState} from 'react';
+import React, {ChangeEvent, useRef, useState} from 'react';
 import {
     Cropper,
-    CropperPreview, CropperRef, CropperPreviewRef, CircleStencil,
+    CropperRef, CropperPreviewRef, CircleStencil,
 } from 'react-advanced-cropper';
 
 import 'react-advanced-cropper/dist/style.css'
