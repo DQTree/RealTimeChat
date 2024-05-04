@@ -9,7 +9,7 @@ import {User} from "@/components/domain/User";
 
 interface SocketContextType {
     createServer: (serverName: string, serverDescription: string, serverIcon: string) => void;
-    joinServer: (serverName: string) => void;
+    joinServer: (serverId: number) => void;
     createChannel: (channelName: string, channelDescription: string) => void;
     messageServer: (message: string) => void;
     leaveServer: (serverName: string) => void;
@@ -37,8 +37,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socket.emit("createServer", {serverName: serverName, serverDescription: serverDescription, serverIcon: serverIcon});
     }
 
-    function joinServer(serverName: string){
-        socket.emit("joinServer", {serverName: serverName});
+    function joinServer(serverId: number){
+        socket.emit("joinServer", {serverId: serverId});
     }
 
     function createChannel(channelName: string, channelDescription: string){

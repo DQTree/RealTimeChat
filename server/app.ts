@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import session from 'express-session'
 import {userRouter, userServices} from "./routes/UserRoutes";
 import {serverServices} from "./routes/ServerRoutes";
+import ErrorHandler from "./middleware/ErrorHandler";
 
 const handlers = require('./controller/ws/SocketHandlers');
 
@@ -55,7 +56,9 @@ io.on('connection', onConnection)
 app.use(sessionMiddleware);
 app.use(bodyParser.json())
 app.use(cookieParser())
+
 app.use('/api', userRouter)
+app.use(ErrorHandler)
 
 // Start the server
 const PORT = 4000;

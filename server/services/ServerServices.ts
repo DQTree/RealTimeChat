@@ -1,10 +1,10 @@
 import {ServerRepositoryInterface} from "../repository/server/ServerRepositoryInterface";
 import {CustomServer} from "../domain/CustomServer";
-import {User} from "../domain/user/User";
 import {CustomChannel} from "../domain/CustomChannel";
 import {Message} from "../domain/Message";
 import {BadRequestError} from "../domain/error/Error";
 import {requireOrThrow} from "../middleware/requireOrThrow";
+import {UserProfile} from "../domain/user/UserProfile";
 
 class ServerServices {
     servers: ServerRepositoryInterface
@@ -14,30 +14,25 @@ class ServerServices {
     createServer = async (serverName: string, serverDescription: string, owner: UserProfile, icon?: string): Promise<CustomServer>  => {
         const serverNameTrimmed = serverName.trim()
         const serverDescriptionTrimmed = serverDescription.trim()
-        if(!serverNameTrimmed || !serverDescriptionTrimmed) throw new BadRequestError("Server name/description can't be an empty string.")
+        requireOrThrow(BadRequestError, !(!serverNameTrimmed || !serverDescriptionTrimmed), "Server name/description can't be an empty string.")
         return await this.servers.createServer(serverNameTrimmed, serverDescriptionTrimmed, owner, icon);
     }
     createChannel = async (serverId: number, channelName: string, channelDescription: string): Promise<CustomChannel> => {
-        const serverExists = this.servers.serverExists(serverId)
-        if(!serverExists) throw new BadRequestError("Server doesn't exist")
+        const serverExists = await this.servers.serverExists(serverId)
+        requireOrThrow(BadRequestError, serverExists, "Server doesn't exist.")
         const channelNameTrimmed = channelName.trim()
         const channelDescriptionTrimmed = channelDescription.trim()
-        if(!channelNameTrimmed || !channelDescriptionTrimmed) throw new BadRequestError("Server name/description can't be an empty string.")
+        requireOrThrow(BadRequestError, !(!channelNameTrimmed || !channelDescriptionTrimmed), "Server name/description can't be an empty string.")
         return await this.servers.createChannel(serverId, channelDescriptionTrimmed, channelDescriptionTrimmed);
     }
-    channelExists = async (serverId: number, channelId: number): Promise<boolean> => {
-        requireOrThrow(BadRequestError, await this.servers.serverExists(serverId), "Server doesn't exist.")
-        requireOrThrow(BadRequestError, await this.servers.channelExists(serverId, channelId), "Channel doesn't exist.")
-        return await this.servers.channelExists(serverId, channelId);
-    }
     addUserToServer = async (serverId: number, user: UserProfile): Promise<CustomServer> => {
-        if(serverId < 0) throw new BadRequestError("Server ID can't be a negative number.")
+        requireOrThrow(BadRequestError, serverId > 0, "Server ID can't be a negative number.")
         return await this.servers.addUserToServer(serverId, user);
     }
     messageChannel = async (serverId: number, channelId: number, message: Message): Promise<Message> => {
         requireOrThrow(BadRequestError, await this.servers.serverExists(serverId), "Server doesn't exist.")
         requireOrThrow(BadRequestError, await this.servers.channelExists(serverId, channelId), "Channel doesn't exist.")
-        requireOrThrow(BadRequestError, !message.message, "Message can't be an empty string.")
+        requireOrThrow(BadRequestError, message.message.trim() != '', "Message can't be an empty string.")
         return await this.servers.messageChannel(serverId, channelId, message)
     }
     leaveServer = async (serverId: number, user: UserProfile): Promise<number> => {

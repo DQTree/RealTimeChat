@@ -1,5 +1,6 @@
 import {CustomChannel} from "./CustomChannel";
 import {User} from "./user/User";
+import {UserProfile} from "./user/UserProfile";
 
 let serialServer = 0
 
