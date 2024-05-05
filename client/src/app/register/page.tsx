@@ -17,7 +17,8 @@ export default function Register() {
         await register(username, email, password)
 
         if(isLoggedIn){
-            redirect('/chat')
+            //  redirect('/chat')
+            redirect('/login')
         }
 
         setUsername('');

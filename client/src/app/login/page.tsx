@@ -17,10 +17,6 @@ export default function Login() {
 
         await login(username, password)
 
-        if(isLoggedIn){
-            redirect('/chat')
-        }
-
         setUsername('');
         setPassword('');
     };

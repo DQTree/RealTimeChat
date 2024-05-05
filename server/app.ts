@@ -37,7 +37,7 @@ io.use(async (socket, next) => {
         const cookieArray = cookies.split(';');
         for (const cookie of cookieArray) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'loggedInUser') {
+            if (name === 'token') {
                 socket.data = await userServices.checkAuth(value)
                 break;
             }

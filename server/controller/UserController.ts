@@ -12,14 +12,14 @@ class UserController {
         try {
             const loginCreds: UserLoginInputModel = req.body
             const [token, options] = await this.services.login(loginCreds)
-            res.status(200).cookie('loggedInUser', token, options).json({ token: token });
+            res.status(200).cookie('token', token, options).json({ token: token });
         } catch (error) {
             next(error);
         }
     }
     logout: RequestHandler = async (req, res, next) => {
         try {
-            res.clearCookie('loggedInUser').status(200).end()
+            res.clearCookie('token').status(200).end()
         } catch (error) {
             next(error);
         }

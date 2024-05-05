@@ -11,6 +11,9 @@ class ServerServices {
     constructor(serverRepo: ServerRepositoryInterface) {
         this.servers = serverRepo
     }
+    getUserServers = async (user: UserProfile) => {
+        return await this.servers.getUserServers(user)
+    }
     createServer = async (serverName: string, serverDescription: string, owner: UserProfile, icon?: string): Promise<CustomServer>  => {
         const serverNameTrimmed = serverName.trim()
         const serverDescriptionTrimmed = serverDescription.trim()
@@ -19,9 +22,9 @@ class ServerServices {
     }
     createChannel = async (serverId: number, channelName: string, channelDescription: string): Promise<CustomChannel> => {
         const serverExists = await this.servers.serverExists(serverId)
-        requireOrThrow(BadRequestError, serverExists, "Server doesn't exist.")
         const channelNameTrimmed = channelName.trim()
         const channelDescriptionTrimmed = channelDescription.trim()
+        requireOrThrow(BadRequestError, serverExists, "Server doesn't exist.")
         requireOrThrow(BadRequestError, !(!channelNameTrimmed || !channelDescriptionTrimmed), "Server name/description can't be an empty string.")
         return await this.servers.createChannel(serverId, channelDescriptionTrimmed, channelDescriptionTrimmed);
     }

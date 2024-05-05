@@ -33,6 +33,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const [currentServer, setCurrentServer] = useState(0);
     const [currentChannel, setCurrentChannel] = useState(0);
 
+    function getUserServers() {
+        socket.emit("userServers");
+    }
+
     function createServer(serverName: string, serverDescription: string, serverIcon: string){
         socket.emit("createServer", {serverName: serverName, serverDescription: serverDescription, serverIcon: serverIcon});
     }
@@ -64,6 +68,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
 
     useEffect(() => {
+        function onUserServersSuccess(servers: CustomServer[]) {
+            setServers(servers);
+        }
+
         function onCreateServerSuccess(server: CustomServer) {
             console.log(server)
             setServers(prev => [...prev, server]);
@@ -137,6 +145,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             })
         }
 
+        getUserServers();
+
+        socket.on("userServersSuccess", onUserServersSuccess)
         socket.on("createServerSuccess", onCreateServerSuccess)
         socket.on("joinServerSuccess", onJoinServerSuccess)
         socket.on("memberJoined", onMemberJoinSuccess)
@@ -145,6 +156,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socket.on("leaveServerSuccess", onLeaveServerSuccess)
 
         return () => {
+            socket.off("userServersSuccess", onUserServersSuccess)
             socket.off("createServerSuccess", onCreateServerSuccess)
             socket.off("joinServerSuccess", onJoinServerSuccess)
             socket.off("memberJoined", onMemberJoinSuccess)

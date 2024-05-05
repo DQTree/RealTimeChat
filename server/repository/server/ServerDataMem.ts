@@ -1,7 +1,6 @@
 import {ServerRepositoryInterface} from "./ServerRepositoryInterface";
 import {Message} from "../../domain/Message";
 import {CustomServer} from "../../domain/CustomServer";
-import {User} from "../../domain/user/User";
 import {CustomChannel} from "../../domain/CustomChannel";
 import {BadRequestError} from "../../domain/error/Error";
 import {UserProfile} from "../../domain/user/UserProfile";
@@ -95,6 +94,10 @@ class ServerDataMem implements ServerRepositoryInterface {
             }
         }
         throw new BadRequestError("Server not found");
+    }
+
+    async getUserServers(user: UserProfile): Promise<CustomServer[]> {
+        return this.servers.filter(s => s.users.some(u => u.id == user.id))
     }
 
 }

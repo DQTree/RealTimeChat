@@ -16,6 +16,18 @@ module.exports = (io: Socket, socket: Socket, userServices: userServices, server
     const credentials: Credentials = socket.data
     const user: UserProfile = {id: credentials.id, username: credentials.username}
 
+    const sendUserServers = async () => {
+        try {
+            const userServers = await serverServices.getUserServers(user);
+            userServers.forEach(server => {
+                socket.join(server.id.toString(10));
+            });
+            io.to(id).emit("userServersSuccess", userServers);
+        } catch (error: any) {
+            const errorMessage: string = error.message;
+            io.to(id).emit("userServersError", errorMessage);
+        }
+    };
     const createServer = async function (data: { serverName: string, serverDescription: string, serverIcon: string }) {
         try {
             const {serverName, serverDescription, serverIcon} = data;
@@ -83,7 +95,7 @@ module.exports = (io: Socket, socket: Socket, userServices: userServices, server
         console.log(`Client disconnected from main`);
     };
 
-
+    socket.on("userServers", sendUserServers);
     socket.on("createServer", createServer);
     socket.on("joinServer", joinServer);
     socket.on("createChannel", createChannel);
