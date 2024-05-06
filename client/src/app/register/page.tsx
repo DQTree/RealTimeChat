@@ -1,7 +1,7 @@
 'use client'
 
 import React, {FormEvent, useState} from "react";
-import {redirect} from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
 import {Button, Container, FormGroup, TextField} from "@mui/material";
 
@@ -10,6 +10,7 @@ export default function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useRouter()
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -17,8 +18,7 @@ export default function Register() {
         await register(username, email, password)
 
         if(isLoggedIn){
-            //  redirect('/chat')
-            redirect('/login')
+            navigate.push('/login')
         }
 
         setUsername('');

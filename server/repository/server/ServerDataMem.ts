@@ -24,8 +24,8 @@ class ServerDataMem implements ServerRepositoryInterface {
         throw new Error("Server or channel not found");
     }
 
-    async createServer(serverName: string, serverDescription: string, owner: UserProfile, icon?: string): Promise<CustomServer> {
-        const server = new CustomServer(serverName, serverDescription, owner);
+    async createServer(serverName: string, serverDescription: string, owner: UserProfile, icon: string): Promise<CustomServer> {
+        const server = new CustomServer(serverName, serverDescription, owner, icon);
         this.servers.push(server);
         return server;
     }

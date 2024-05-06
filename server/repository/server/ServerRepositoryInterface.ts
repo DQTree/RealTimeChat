@@ -5,7 +5,7 @@ import {UserProfile} from "../../domain/user/UserProfile";
 
 export interface ServerRepositoryInterface {
     getUserServers(user: UserProfile): Promise<CustomServer[]>;
-    createServer(serverName: string, serverDescription: string, user: UserProfile, icon?: string): Promise<CustomServer>;
+    createServer(serverName: string, serverDescription: string, user: UserProfile, icon: string): Promise<CustomServer>;
     createChannel(serverId: number, channelName: string, channelDescription: string): Promise<CustomChannel>
     getServerByName(name: string): Promise<CustomServer>;
     serverExists(serverId: number): Promise<boolean>;

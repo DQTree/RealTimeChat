@@ -9,7 +9,7 @@ export class CustomServer {
     users: User[]
     icon: string = ""
     description: string
-    constructor(serverName: string, description: string, owner: User, icon?: string) {
+    constructor(serverName: string, description: string, owner: User, icon: string) {
         this.name = serverName
         this.owner = [owner]
         this.channels = [new CustomChannel("general", "First channel")]

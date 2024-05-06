@@ -18,7 +18,7 @@ class ServerRepository implements ServerRepositoryInterface {
         return undefined;
     }
 
-    async createServer(serverName: string, serverDescription: string, owner: User, icon?: string): Promise<CustomServer> {
+    async createServer(serverName: string, serverDescription: string, owner: User, icon: string): Promise<CustomServer> {
         return undefined;
     }
 

@@ -14,7 +14,7 @@ class ServerServices {
     getUserServers = async (user: UserProfile) => {
         return await this.servers.getUserServers(user)
     }
-    createServer = async (serverName: string, serverDescription: string, owner: UserProfile, icon?: string): Promise<CustomServer>  => {
+    createServer = async (serverName: string, serverDescription: string, owner: UserProfile, icon: string): Promise<CustomServer>  => {
         const serverNameTrimmed = serverName.trim()
         const serverDescriptionTrimmed = serverDescription.trim()
         requireOrThrow(BadRequestError, !(!serverNameTrimmed || !serverDescriptionTrimmed), "Server name/description can't be an empty string.")
