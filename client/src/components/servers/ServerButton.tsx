@@ -5,5 +5,8 @@ export default function ServerButton({id, name, image}: {id: number, name: strin
     const {changeServer} = useSocket()
 
     return(
+        <Button className="server" id={name} onClick={() => {changeServer(id)}}>
+            {image ? <img src={image} alt={name} /> : name[0]}
+        </Button>
     )
 }

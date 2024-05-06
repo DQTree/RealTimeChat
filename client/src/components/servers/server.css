@@ -1,5 +1,21 @@
-.server:hover {
-    background-color: grey;
+#servers {
+    background: rgba(8, 8, 8, 1);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.server {
+    height: 4rem;
+    margin: 0.4rem;
+    transition: ease-out 0.2s;
+    border-radius: 32px;
+    background: rgba(32, 32, 32, 1);
+}
+
+.server img {
+    width: 4rem;
+    border-radius: 32px;
 }
 
 .server:hover img {

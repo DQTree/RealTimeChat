@@ -3,6 +3,8 @@
 import React, {FormEvent, useEffect, useState} from "react";
 import {redirect} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
+
+import './page.css'
 import {Button, Container, FormGroup, TextField} from "@mui/material";
 
 export default function Login() {
@@ -25,7 +27,7 @@ export default function Login() {
 
     return (
         <Container maxWidth="xs">
-            <div className={"h-inherit flex flex-col justify-center items-center"}>
+            <div id="login">
                 <form onSubmit={handleSubmit}>
                     <FormGroup className="mb-3">
                         <TextField

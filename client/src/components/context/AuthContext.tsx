@@ -1,5 +1,7 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 import UserServices from "@/services/UserServices";
+import {router} from "next/client";
 
 interface AuthContextType {
     login: (username: string, password: string) => Promise<void>;
