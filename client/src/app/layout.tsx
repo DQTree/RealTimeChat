@@ -1,8 +1,12 @@
-'use client'
-
 import React from "react";
 import './globals.css'
-import {AuthProvider} from "@/components/context/AuthContext";
+import {Metadata} from "next";
+import CustomLayout from "@/components/customlayout/CustomLayout";
+
+export const metadata: Metadata = {
+    title: 'RealTimeChat',
+    description: 'Similar to Discord'
+}
 
 export default function RootLayout({children}: {
   children: React.ReactNode
@@ -15,9 +19,9 @@ export default function RootLayout({children}: {
           <title>RealTimeChat</title>
       </head>
       <body>
-          <AuthProvider>
-              {children}
-          </AuthProvider>
+      <CustomLayout>
+          {children}
+      </CustomLayout>
       </body>
       </html>
   )
