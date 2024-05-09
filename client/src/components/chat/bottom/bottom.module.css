@@ -1,0 +1,35 @@
+.bottom {
+    display: flex;
+    flex-direction: row;
+    flex: 10;
+}
+
+.sendMessage {
+    height: fit-content;
+}
+
+.sendMessageInput {
+    border-radius: 8px;
+    border: none;
+    padding: 16px;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.chatArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 3;
+}
+
+.messages {
+    overflow-y: auto;
+}
+
+.memberArea {
+    display: flex;
+    flex-direction: column;
+    margin-right: 0;
+    width: 12rem;
+}

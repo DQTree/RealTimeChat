@@ -3,9 +3,9 @@
 import React, {FormEvent, useEffect, useState} from "react";
 import {redirect} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
-
-import './page.css'
 import {Button, Container, FormGroup, TextField} from "@mui/material";
+
+import styles from './login.module.css'
 
 export default function Login() {
     const {login, isLoggedIn} = useAuth()
@@ -22,12 +22,12 @@ export default function Login() {
     };
 
     useEffect(() => {
-        if (isLoggedIn) redirect('/chat');
+        if (isLoggedIn) redirect('/app');
     }, [isLoggedIn]);
 
     return (
         <Container maxWidth="xs">
-            <div id="login">
+            <div className={styles.login}>
                 <form onSubmit={handleSubmit}>
                     <FormGroup className="mb-3">
                         <TextField

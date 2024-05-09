@@ -1,35 +1,27 @@
 import {useSocket} from "@/components/context/SocketContext";
-
-import './taskbar.css'
-import {useOverlay} from "@/components/context/OverlayContext";
-
 import AddChannelForm from "@/components/channel/AddChannelForm";
 import {Button} from "@mui/material";
+import {useOverlay} from "@/components/context/OverlayContext";
+import ServerDescription from "@/components/taskbar/server/ServerDescription";
+
+import styles from './taskbar.module.css'
 
 export default function TaskBar(){
     const {servers, currentServer, currentChannel, changeChannel } = useSocket()
     const {handleShow} = useOverlay()
 
     return (
-        <div id="taskbar">
-            <div id="server">
-                {servers[currentServer] && <div id="server-card">
-                    <h1 id="server-card-name">
-                        {servers[currentServer].name}
-                    </h1>
-                    <h2 id="server-card-description">
-                        {servers[currentServer].description}
-                    </h2>
-                </div>
-                }
+        <div className={styles.taskbar}>
+            <div className={styles.server}>
+                {servers[currentServer] && <ServerDescription server={servers[currentServer]}/>}
             </div>
-            <div id="channels">
+            <div className={styles.channels}>
                 {servers[currentServer] && servers[currentServer].channels && servers[currentServer].channels.map((channel, index) => (
                     <Button
                         key={`${channel.name}-${channel.id.toString(10)}`}
-                        className="channel"
+                        className={styles.channel}
                         id={channel.id.toString(10)}
-                        onClick={() => {changeChannel(channel.id)}}
+                        onClick={() => changeChannel(channel.id)}
                         style={{ backgroundColor: currentChannel == index ? 'rgba(128, 128, 128, .5)' : 'transparent' }}
                     >
                         # {channel.name}
@@ -37,11 +29,11 @@ export default function TaskBar(){
                 ))}
                 <Button onClick={() => handleShow(<AddChannelForm/>)}>Add channel</Button>
             </div>
-            <div id="userbar">
+            <div className={styles.userbar}>
                 {/* !isLoggedIn ? <Button variant="primary" onClick={() => handleShow(<LoginForm/>)}>
                     Login
                 </Button> : <div id="user">{isLoggedIn.name}</div>*/}
-                <div id="user"></div>
+                <div className={styles.user}></div>
             </div>
         </div>
     )

@@ -1,34 +1,25 @@
-'use client'
-
 import {useSocket} from "@/components/context/SocketContext";
-import ServerButton from "@/components/servers/ServerButton";
-
-import './server.css'
+import styles from './server.module.css'
 import {useOverlay} from "@/components/context/OverlayContext";
 import ServerCreateForm from "@/components/servers/ServerCreateForm";
-import { Button } from "@mui/material";
+import {Add, Close} from "@mui/icons-material";
 
 
 export default function Servers() {
-    const {servers} = useSocket()
+    const {servers, changeServer} = useSocket()
     const {handleShow} = useOverlay()
 
     return (
-        <div id="servers">
-            <Button className="server material-symbols-outlined"
-                    onClick={() => {
-                    }}
-            >
-                density_large
-            </Button>
-            {servers && servers.map((a) => (
-                <ServerButton key={a.name} id={a.id} name={a.name} image={a.icon}/>
+        <div className={styles.servers}>
+            <button className={styles.server} onClick={() => {}}><Close/></button>
+
+            {servers && servers.map((c, i) => (
+                <button className={styles.server} onClick={e => changeServer(c.id)} key={i}>
+                    {c.icon ? <img src={c.icon} alt={c.name} /> : c.name[0]}
+                </button>
             ))}
-            <Button
-                className="server material-symbols-outlined"
-                onClick={() => handleShow(<ServerCreateForm/>)}>
-                add
-            </Button>
+
+            <button className={styles.server} onClick={() => handleShow(<ServerCreateForm/>)}><Add/></button>
         </div>
     )
 }

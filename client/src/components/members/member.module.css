@@ -1,0 +1,27 @@
+.member {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-left: 1rem;
+}
+
+.memberIcon {
+    border-radius: 32px;
+    background: rgba(32, 32, 32, 1);
+    height: 2.5rem;
+    width: 2.5rem;
+    color: white;
+    text-transform: none;
+    text-align: center;
+    align-content: center;
+}
+
+.memberIcon img {
+    border-radius: 32px;
+    width: 2rem;
+}
+
+.memberName {
+    margin-left: 1rem;
+}

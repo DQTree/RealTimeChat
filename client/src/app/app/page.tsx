@@ -2,23 +2,21 @@
 
 import Servers from "@/components/servers/Servers";
 import TaskBar from "@/components/taskbar/TaskBar";
-import Chat from "@/components/chat/Chat";
-import Members from "@/components/members/Members";
 
-import './page.css'
+import styles from './app.module.css'
 import {SocketProvider} from "@/components/context/SocketContext";
 import React from "react";
 import {OverlayProvider} from "@/components/context/OverlayContext";
+import ChatArea from "@/components/chat/ChatArea";
 
-export default function Page() {
+export default function App() {
     return(
-        <div id="app">
+        <div className={styles.app}>
             <SocketProvider>
                 <OverlayProvider>
                     <Servers/>
                     <TaskBar/>
-                    <Chat/>
-                    <Members/>
+                    <ChatArea/>
                 </OverlayProvider>
             </SocketProvider>
         </div>

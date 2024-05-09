@@ -1,7 +1,7 @@
 'use client'
 
 import React, {FormEvent, useState} from "react";
-import {redirect, useRouter} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
 import {Button, Container, FormGroup, TextField} from "@mui/material";
 

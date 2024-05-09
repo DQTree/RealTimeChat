@@ -58,12 +58,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
 
     function changeServer(serverId: number) {
-        const server = servers.findIndex(s => s.id === serverId)
+        const server = servers.findIndex(s => s.id == serverId)
         setCurrentServer(server);
     }
 
     function changeChannel(channelId: number){
-        const channel = servers[currentServer].channels.findIndex(s => s.id === channelId);
+        const channel = servers[currentServer].channels.findIndex(s => s.id == channelId);
         setCurrentChannel(channel)
     }
 
@@ -73,13 +73,11 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         }
 
         function onCreateServerSuccess(server: CustomServer) {
-            console.log(server)
             setServers(prev => [...prev, server]);
             setCurrentServer(servers.length-1)
         }
 
         function onJoinServerSuccess(server: CustomServer) {
-            console.log(server)
             setServers(prev => [...prev, server]);
             setCurrentServer(servers.length-1)
         }

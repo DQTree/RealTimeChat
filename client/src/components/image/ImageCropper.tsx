@@ -6,7 +6,7 @@ import {
 
 import 'react-advanced-cropper/dist/style.css'
 
-import './style.css'
+import styles from './image.module.css'
 
 export default function ImageCropper({ setServerIcon }: { setServerIcon: (image: string) => void }) {
     const previewRef = useRef<CropperPreviewRef>(null);
@@ -69,7 +69,7 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
     };
 
     return (
-        <div id="image-container">
+        <div className={styles.imageContainer}>
             <div id="image-preview">
                 <Cropper
                     ref={cropperRef}
