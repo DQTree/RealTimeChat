@@ -7,11 +7,11 @@ import {
 import 'react-advanced-cropper/dist/style.css'
 
 import styles from './image.module.css'
+import {Slider} from "@mui/material";
 
 export default function ImageCropper({ setServerIcon }: { setServerIcon: (image: string) => void }) {
     const previewRef = useRef<CropperPreviewRef>(null);
     const cropperRef = useRef<CropperRef>(null);
-
     const [src, setSrc] = useState("");
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,34 +30,16 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
             }
         };
         reader.readAsDataURL(file);
-    }
+    };
 
     const onUpdate = () => {
         previewRef.current?.refresh();
-        const canvas = cropperRef.current?.getCanvas();
-        if (canvas) {
-            setServerIcon(canvas.toDataURL())
-        }
     };
 
-    const onSave = () => {
-        const canvas = cropperRef.current?.getCanvas();
-        if (canvas) {
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const anchor = document.createElement('a');
-                    anchor.href = URL.createObjectURL(blob);
-                    anchor.download = 'cropped_image.png';
-                    anchor.click();
-                    URL.revokeObjectURL(anchor.href);
-                }
-            }, 'image/png');
-        }
-    };
-
-    const onClear = () => {
+    const onClear = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
         cropperRef.current?.reset();
-        setServerIcon("")
+        setSrc("");
     };
 
     const onOk = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -70,27 +52,23 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
 
     return (
         <div className={styles.imageContainer}>
-            <div id="image-preview">
+            <div className={styles.cropper}>
                 <Cropper
                     ref={cropperRef}
-                    className="cropper"
+                    className={styles.cropper}
                     stencilProps={{aspectRatio: 1}}
                     src={src}
                     onUpdate={onUpdate}
                     stencilComponent={CircleStencil}
                 />
-                {/*
-                <CropperPreview
-                    ref={previewRef}
-                    cropper={cropperRef}
-                    className="preview"
-                />
-                */}
             </div>
-            <input type='file' accept="image/*" onChange={handleFileChange}/>
-            {/*<button onClick={onClear}>Clear</button>*/}
-            {/*<button onClick={onSave}>Save</button>*/}
-            {/*<button onClick={e => onOk(e)}>Set</button>*/}
+            <label className={styles.customFileButton}>
+                <input type='file' accept="image/*"
+                       onChange={handleFileChange} className={styles.input}/>
+                Upload image
+            </label>
+            <button onClick={onClear}>Clear</button>
+            <button onClick={onOk}>Set</button>
         </div>
     );
 };

@@ -1,8 +1,8 @@
 import {useSocket} from "@/components/context/SocketContext";
 import {useOverlay} from "@/components/context/OverlayContext";
 import ServerCreateForm from "@/components/servers/ServerCreateForm";
-import {Add, Close} from "@mui/icons-material";
-import {ContextMenuOption, useContextMenu} from "@/components/context/ContextMenuContext";
+import {Add} from "@mui/icons-material";
+import {useContextMenu} from "@/components/context/ContextMenuContext";
 import {useAuth} from "@/components/context/AuthContext";
 
 import styles from './server.module.css'

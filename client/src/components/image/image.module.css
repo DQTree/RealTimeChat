@@ -2,3 +2,18 @@
     width: 10rem;
     height: 10rem;
 }
+
+.cropper {
+    width: 20rem;
+}
+
+.input[type='file'] {
+    display: none;
+}
+
+.customFileButton {
+    background-color: grey;
+    padding: 1px;
+    border-radius: 2px;
+    color: white;
+}

@@ -5,6 +5,8 @@ import {useRouter} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
 import {Button, Container, FormGroup, TextField} from "@mui/material";
 
+import styles from './register.module.css'
+
 export default function Register() {
     const {register, isLoggedIn} = useAuth()
     const [username, setUsername] = useState('');
@@ -28,7 +30,7 @@ export default function Register() {
 
     return (
         <Container maxWidth="xs">
-            <div id="registration">
+            <div className={styles.registration}>
                 <form onSubmit={handleSubmit}>
                     <FormGroup>
                         <TextField
