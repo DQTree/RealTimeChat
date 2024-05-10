@@ -1,0 +1,25 @@
+.channel {
+    border: none;
+    border-radius: 4px;
+    margin: 1px;
+    background: transparent;
+    white-space: nowrap;
+}
+
+.channel button {
+    width: 100%;
+    color: white;
+}
+
+.channel:hover {
+    background-color: black;
+}
+
+.channelName {
+    width: 100%;
+    margin-left: 4px;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    text-transform: none;
+}

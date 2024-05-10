@@ -6,6 +6,7 @@ import {UserRegisterInputModel} from "../domain/user/input/UserRegisterInputMode
 import {UserRepositoryInterface} from "../repository/user/UserRepositoryInterface";
 import UserRepository from "../repository/user/UserRepository";
 import {User} from "../domain/user/User";
+import {UserProfile} from "../domain/user/UserProfile";
 
 class UserServices {
     private repo: UserRepositoryInterface;
@@ -14,9 +15,9 @@ class UserServices {
         this.repo = repo;
         this.domain = new UserDomain();
     }
-    async login(login: UserLoginInputModel): Promise<[string, object]> {
+    async login(login: UserLoginInputModel): Promise<[string, object, object]> {
         const user = await this.repo.getUserByUsername(login.username)
-        if(user == undefined) throw new BadRequestError("User doesnt exist")
+        if(user == undefined) throw new BadRequestError("UserProfile doesnt exist")
 
         if(!await this.domain.verifyPassword(login.password, user.password)) throw new BadRequestError("Password doesnt match")
 
@@ -27,7 +28,7 @@ class UserServices {
             secure: true,
             maxAge: expireTime
         }
-        return [tokenPromise, options];
+        return [tokenPromise, options, {id: user.id, username: user.username}];
     }
     /*
     async logout(res): Promise<boolean> {
@@ -43,8 +44,10 @@ class UserServices {
     async checkAuth(token: string): Promise<Credentials | undefined> {
         return await this.domain.validateToken(token)
     }
-    async getUserById(id: number): Promise<User | undefined> {
-        return await this.repo.getUserById(id)
+    async getUserById(id: number): Promise<UserProfile> {
+        const user = await this.repo.getUserById(id)
+        if(id == undefined) throw new BadRequestError("Something happened while getting user")
+        return {id: user.id, username: user.username};
     }
 }
 

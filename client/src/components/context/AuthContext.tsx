@@ -1,11 +1,13 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import UserServices from "@/services/UserServices";
+import {UserProfile} from "@/components/domain/UserProfile";
 
 interface AuthContextType {
     login: (username: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<void>;
+    loggedUser: UserProfile | undefined;
     isLoggedIn: boolean;
 }
 
@@ -16,44 +18,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [loggedUser, setLoggedUser] = useState<UserProfile | undefined>(undefined);
     const userServices = new UserServices(API_URL);
 
     async function login(username: string, password: string) {
         await userServices.login(username, password).then(async r => {
             if (r.ok) {
-                const {message} = await r.json();
-                console.log('Login successful: ', message);
-                setIsLoggedIn(true);
+                const {token, user} = await r.json();
+                const userProfile: UserProfile = user
+                setLoggedUser(userProfile);
             } else {
                 const {message} = await r.json();
-                console.error('Login failed: ', message);
-                setIsLoggedIn(false);
+                setLoggedUser(undefined)
             }
+            setIsLoggedIn(r.ok)
         });
     }
 
     async function register(username: string, email: string, password: string) {
         await userServices.register(username, email, password).then(r => {
-            if(r.ok){
-                setIsLoggedIn(true);
-            }else{
-                setIsLoggedIn(false);
-            }
+            setIsLoggedIn(r.ok);
         });
     }
 
     async function logout() {
         await userServices.logout();
         setIsLoggedIn(false)
+        setLoggedUser(undefined)
     }
 
     async function checkAuth() {
-        await userServices.checkAuth().then(r => {
-            if(r) {
-                setIsLoggedIn(true)
-            }else{
-                setIsLoggedIn(false)
+        await userServices.checkAuth().then(async r => {
+            if (r.ok) {
+                const userProfile: UserProfile = await r.json();
+                setLoggedUser(userProfile);
+            } else {
+                setLoggedUser(undefined)
             }
+            setIsLoggedIn(r.ok)
         });
     }
 
@@ -74,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 register,
                 logout,
                 checkAuth,
+                loggedUser,
                 isLoggedIn
             }}
         >

@@ -1,7 +1,6 @@
 .top {
-    margin-top: 0;
     flex: 1;
-    background: rgba(32, 32, 32, 1);
+    background: var(--tertiary);
     display: flex;
     flex-direction: row;
     align-items: center;

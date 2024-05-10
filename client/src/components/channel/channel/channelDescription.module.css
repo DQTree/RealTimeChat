@@ -1,0 +1,13 @@
+.channel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 1rem;
+}
+
+.channelName {
+
+}
+
+.channelDescription {
+}

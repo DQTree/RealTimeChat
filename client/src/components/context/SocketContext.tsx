@@ -5,7 +5,7 @@ import {CustomServer} from "@/components/domain/CustomServer";
 import {CustomChannel} from "@/components/domain/CustomChannel";
 import {Message} from "@/components/domain/Message";
 import {io} from "socket.io-client";
-import {User} from "@/components/domain/User";
+import {UserProfile} from "@/components/domain/UserProfile";
 
 interface SocketContextType {
     createServer: (serverName: string, serverDescription: string, serverIcon: string) => void;
@@ -99,7 +99,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             });
         }
 
-        function onMemberJoinSuccess(data: {user: User, serverId: number}){
+        function onMemberJoinSuccess(data: {user: UserProfile, serverId: number}){
             const {user, serverId} = data
 
             setServers(prev => {

@@ -11,8 +11,8 @@ class UserController {
     login: RequestHandler = async (req, res, next) => {
         try {
             const loginCreds: UserLoginInputModel = req.body
-            const [token, options] = await this.services.login(loginCreds)
-            res.status(200).cookie('token', token, options).json({ token: token });
+            const [token, options, user] = await this.services.login(loginCreds)
+            res.status(200).cookie('token', token, options).json({ token: token, user: user });
         } catch (error) {
             next(error);
         }
@@ -27,7 +27,7 @@ class UserController {
     register: RequestHandler = async (req, res, next) => {
         try {
             const registerCreds: UserRegisterInputModel = req.body
-            const userId = this.services.register(registerCreds)
+            const userId = await this.services.register(registerCreds)
             res.status(201).json({id: userId})
         } catch (error) {
             next(error);
@@ -35,7 +35,8 @@ class UserController {
     }
     checkAuth: RequestHandler = async (req, res, next) => {
         try {
-            res.status(200).json()
+            const user = await this.services.getUserById(parseInt(<string>res.getHeader('user')))
+            res.status(200).json(user)
         } catch (error) {
             next(error);
         }

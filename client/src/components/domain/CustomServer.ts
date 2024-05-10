@@ -1,15 +1,15 @@
-import {User} from "./User";
+import {UserProfile} from "./UserProfile";
 import {CustomChannel} from "@/components/domain/CustomChannel";
 
 export class CustomServer {
     id: number = -1
     name: string
-    owner: User[]
+    owner: UserProfile[]
     channels: CustomChannel[]
-    users: User[]
+    users: UserProfile[]
     icon: string = ""
     description: string
-    constructor(serverName: string, description: string, owner: User, icon: string) {
+    constructor(serverName: string, description: string, owner: UserProfile, icon: string) {
         this.name = serverName
         this.owner = [owner]
         this.channels = [new CustomChannel("general", "First channel")]

@@ -1,5 +1,5 @@
 .servers {
-    background: rgba(8, 8, 8, 1);
+    background: var(--primary);
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -9,7 +9,7 @@
     margin: 0.4rem;
     transition: ease-out 0.2s;
     border-radius: 32px;
-    background: rgba(32, 32, 32, 1);
+    background: var(--tertiary);
     height: 4rem;
     width: 4rem;
     color: white;

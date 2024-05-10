@@ -1,5 +1,7 @@
 import styles from './top.module.css'
 import {CustomChannel} from "@/components/domain/CustomChannel";
+import ChannelDescription from "@/components/channel/channel/ChannelDescription";
+import CustomToolBar from "@/components/chat/top/customtoolbar/CustomToolBar";
 
 export default function ChatTop({ channel, showMembersToggle }: {
     channel: CustomChannel,
@@ -7,17 +9,8 @@ export default function ChatTop({ channel, showMembersToggle }: {
 }) {
     return (
         <div className={styles.top}>
-            <div>
-                <h2>
-                    {channel.name}
-                </h2>
-                <h3>{channel.description}</h3>
-            </div>
-            <div>
-                <button onClick={() => showMembersToggle()}>
-                    Show
-                </button>
-            </div>
+            <ChannelDescription channel={channel}></ChannelDescription>
+            <CustomToolBar showMembersToggle={showMembersToggle}/>
         </div>
     )
 }

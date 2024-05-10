@@ -22,7 +22,7 @@ class UserDataMem implements UserRepositoryInterface {
         if (user) {
             return user;
         }
-        throw new BadRequestError("User not found");
+        throw new BadRequestError("UserProfile not found");
     }
 
     async getUserByUsername(username: string): Promise<User> {
@@ -30,7 +30,7 @@ class UserDataMem implements UserRepositoryInterface {
         if (user) {
             return user;
         }
-        throw new BadRequestError("User not found");
+        throw new BadRequestError("UserProfile not found");
     }
 }
 

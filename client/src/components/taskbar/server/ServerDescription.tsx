@@ -1,5 +1,6 @@
-import styles from "@/components/taskbar/taskbar.module.css";
 import {CustomServer} from "@/components/domain/CustomServer";
+
+import styles from './server.module.css'
 
 export default function ServerDescription({server}: {server: CustomServer}) {
     return (

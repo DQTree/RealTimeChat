@@ -16,10 +16,8 @@ class UserServices {
     async register(username: string, email: string, password: string): Promise<Response> {
         return post(this.url + '/register', false, { username: username, email: email, password: password });
     }
-    async checkAuth(): Promise<boolean> {
-        return get(this.url + '/auth', true).then(async (response) => {
-            return response.ok
-        });
+    async checkAuth(): Promise<Response> {
+        return get(this.url + '/auth', true);
     }
 }
 

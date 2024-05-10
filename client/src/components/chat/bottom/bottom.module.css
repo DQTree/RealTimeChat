@@ -1,11 +1,13 @@
 .bottom {
     display: flex;
     flex-direction: row;
-    flex: 10;
+    flex: 18;
+    box-shadow: var(--accent) 2px 2px 4px 2px;
 }
 
 .sendMessage {
     height: fit-content;
+    margin: 1rem;
 }
 
 .sendMessageInput {
@@ -14,6 +16,7 @@
     padding: 16px;
     width: 100%;
     margin-bottom: 0;
+    background: var(--secondary);
 }
 
 .chatArea {
@@ -21,6 +24,7 @@
     flex-direction: column;
     justify-content: flex-end;
     flex: 3;
+    background: var(--tertiary);
 }
 
 .messages {
@@ -32,4 +36,5 @@
     flex-direction: column;
     margin-right: 0;
     width: 12rem;
+    background: var(--secondary);
 }
