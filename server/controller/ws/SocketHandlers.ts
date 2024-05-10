@@ -80,8 +80,10 @@ module.exports = (io: Socket, socket: Socket, userServices: userServices, server
             io.to(id).emit("messageServerError", errorMessage);
         }
     };
-    const leaveServer = async function (serverId: number) {
+    const leaveServer = async function (data: { serverId: number }) {
         try {
+            const {serverId} = data
+            console.log("Server ID to leave: "+serverId)
             const server = await serverServices.leaveServer(serverId, user)
 
             socket.leave(server.toString());
@@ -91,6 +93,21 @@ module.exports = (io: Socket, socket: Socket, userServices: userServices, server
             io.to(id).emit("leaveServerError", errorMessage);
         }
     };
+    const deleteServer = async function (data: { serverId: number }) {
+        try {
+            const {serverId} = data
+            console.log("Server ID to delete: "+serverId)
+            const server = await serverServices.deleteServer(serverId, user);
+
+            server.forEach(u => io.to(u.id.toString()).emit("deleteServerSuccess", serverId));
+
+            socket.leave(serverId.toString());
+            io.to(id).emit("deleteServerSuccess", "Left successfully");
+        } catch (error: any) {
+            const errorMessage: string = error.message;
+            io.to(id).emit("deleteServerError", errorMessage);
+        }
+    }
     const disconnect = async function () {
         console.log(`Client disconnected from main`);
     };
@@ -101,5 +118,6 @@ module.exports = (io: Socket, socket: Socket, userServices: userServices, server
     socket.on("createChannel", createChannel);
     socket.on("messageServer", messageServer);
     socket.on("leaveServer", leaveServer);
+    socket.on("deleteServer", deleteServer);
     socket.on("disconnect", disconnect);
 }

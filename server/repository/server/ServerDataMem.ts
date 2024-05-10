@@ -54,6 +54,17 @@ class ServerDataMem implements ServerRepositoryInterface {
         throw new BadRequestError("Server not found");
     }
 
+    async deleteServer(serverId: number, user: UserProfile): Promise<UserProfile[]> {
+        for (const srv of this.servers) {
+            if (srv.id == serverId && srv.owner.some(o => o.id == user.id)) {
+                const server = srv
+                this.servers = this.servers.filter(s => s.id != serverId);
+                return server.users
+            }
+        }
+        throw new BadRequestError("Server not found");
+    }
+
     async channelExists(serverId: number, channelId: number): Promise<boolean> {
         const server = this.servers.find(s => s.id == serverId);
         if (server) {

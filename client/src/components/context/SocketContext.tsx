@@ -12,7 +12,8 @@ interface SocketContextType {
     joinServer: (serverId: number) => void;
     createChannel: (channelName: string, channelDescription: string) => void;
     messageServer: (message: string) => void;
-    leaveServer: (serverName: string) => void;
+    leaveServer: (serverId: number) => void;
+    deleteServer: (serverId: number) => void;
     changeServer: (serverId: number) => void;
     changeChannel: (channelId: number) => void;
     currentServer: number;
@@ -53,8 +54,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socket.emit("messageServer", {serverId: servers[currentServer].id, channelId: servers[currentServer].channels[currentChannel].id, message: message});
     }
 
-    function leaveServer(serverId: string){
+    function leaveServer(serverId: number){
         socket.emit("leaveServer", {serverId: serverId});
+    }
+
+    function deleteServer(serverId: number) {
+        socket.emit("deleteServer", {serverId: serverId})
     }
 
     function changeServer(serverId: number) {
@@ -143,6 +148,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             })
         }
 
+        function onDeleteServerSuccess(serverId: number) {
+            setServers(prevState => {
+                return prevState.filter(s => s.id != serverId);
+            })
+        }
+
         getUserServers();
 
         socket.on("userServersSuccess", onUserServersSuccess)
@@ -152,6 +163,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socket.on("createChannelSuccess", onCreateChannelSuccess)
         socket.on("messageServerSuccess", onMessageServerSuccess)
         socket.on("leaveServerSuccess", onLeaveServerSuccess)
+        socket.on("deleteServerSuccess", onDeleteServerSuccess)
 
         return () => {
             socket.off("userServersSuccess", onUserServersSuccess)
@@ -161,6 +173,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             socket.off("createChannelSuccess", onCreateChannelSuccess)
             socket.off("messageServerSuccess", onMessageServerSuccess)
             socket.off("leaveServerSuccess", onLeaveServerSuccess)
+            socket.off("deleteServerSuccess", onDeleteServerSuccess)
         }
     }, [])
 
@@ -172,6 +185,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
                 createChannel,
                 messageServer,
                 leaveServer,
+                deleteServer,
                 changeServer,
                 currentServer,
                 currentChannel,

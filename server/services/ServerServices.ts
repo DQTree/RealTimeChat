@@ -39,7 +39,12 @@ class ServerServices {
         return await this.servers.messageChannel(serverId, channelId, message)
     }
     leaveServer = async (serverId: number, user: UserProfile): Promise<number> => {
+        requireOrThrow(BadRequestError, await this.servers.serverExists(serverId), "Server doesn't exist.")
         return await this.servers.leaveServer(serverId, user)
+    }
+    deleteServer = async (serverId: number, user: UserProfile): Promise<UserProfile[]> => {
+        requireOrThrow(BadRequestError, await this.servers.serverExists(serverId), "Server doesn't exist.")
+        return await this.servers.deleteServer(serverId, user)
     }
 }
 

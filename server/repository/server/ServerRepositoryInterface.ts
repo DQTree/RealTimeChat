@@ -13,4 +13,5 @@ export interface ServerRepositoryInterface {
     messageChannel(serverId: number, channelId: number, message: Message): Promise<Message>;
     addUserToServer(serverId: number, user: UserProfile): Promise<CustomServer>;
     leaveServer(serverId: number, user: UserProfile): Promise<number>;
+    deleteServer(serverId: number, user: UserProfile): Promise<UserProfile[]>;
 }
