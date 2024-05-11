@@ -1,8 +1,8 @@
-import {createContext, MouseEvent, ReactNode, useContext, useState} from "react";
+import React, {createContext, MouseEvent, ReactNode, useContext, useState} from "react";
 import {Menu, MenuItem} from "@mui/material";
 
 interface ContextMenuContextType {
-    openContextMenu: (event: MouseEvent<HTMLDivElement, MouseEvent>, options: ContextMenuOption[]) => void;
+    openContextMenu: (event: React.MouseEvent<HTMLDivElement>, options: ContextMenuOption[]) => void;
     closeContextMenu: () => void;
 }
 
@@ -18,7 +18,7 @@ export function ContextMenuContextProvider({ children }: { children: ReactNode }
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [contextMenuOptions, setContextMenuOptions] = useState<ContextMenuOption[]>([]);
 
-    const openContextMenu = (event: MouseEvent<HTMLDivElement, MouseEvent>, options: ContextMenuOption[]) => {
+    const openContextMenu = (event: React.MouseEvent<HTMLDivElement>, options: ContextMenuOption[]) => {
         event.preventDefault();
         setContextMenuOptions(options);
         setContextMenuPosition({ x: event.clientX, y: event.clientY });

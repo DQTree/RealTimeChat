@@ -1,7 +1,7 @@
 import {createContext, ReactElement, ReactNode, useContext, useState} from "react";
+import { Dialog } from "@mui/material";
 
 import './overlay.css'
-import { Dialog } from "@mui/material";
 
 interface OverlayContextType {
     handleClose: () => void;
