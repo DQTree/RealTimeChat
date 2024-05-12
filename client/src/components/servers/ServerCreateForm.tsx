@@ -1,8 +1,9 @@
 import {useOverlay} from "@/components/context/OverlayContext";
 import {useSocket} from "@/components/context/SocketContext";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import ImageCropper from "@/components/image/ImageCropper";
 import {Button, Container, TextField} from "@mui/material";
+import {CropperRef} from "react-advanced-cropper";
 
 export default function ServerCreateForm() {
     const { handleClose } = useOverlay()
@@ -10,10 +11,23 @@ export default function ServerCreateForm() {
     const [serverId, setServerId] = useState(-1);
     const [serverName, setServerName] = useState('');
     const [serverDescription, setServerDescription] = useState('');
-    const [serverIcon, setServerIcon] = useState('');
+    const cropperRef = useRef<CropperRef>(null);
 
     const handleCreateServer = () => {
-        createServer(serverName, serverDescription, serverIcon);
+        let iconDataUrl = ''
+        const canvas = cropperRef.current?.getCanvas();
+        if (canvas) {
+            const resizedCanvas = document.createElement('canvas');
+            const ctx = resizedCanvas.getContext('2d');
+            if (ctx) {
+                resizedCanvas.width = 512;
+                resizedCanvas.height = 512;
+                ctx.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
+                iconDataUrl = resizedCanvas.toDataURL();
+            }
+        }
+
+        createServer(serverName, serverDescription, iconDataUrl);
         handleClose();
     };
 
@@ -50,7 +64,7 @@ export default function ServerCreateForm() {
                             onChange={(e) => setServerDescription(e.target.value)}
                             fullWidth
                         />
-                        <ImageCropper setServerIcon={setServerIcon} />
+                        <ImageCropper cropperRef={cropperRef} />
                         <Button variant="contained" color="primary" onClick={handleCreateServer}>
                             Create
                         </Button>

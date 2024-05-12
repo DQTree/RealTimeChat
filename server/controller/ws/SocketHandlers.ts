@@ -102,7 +102,7 @@ module.exports = (io: Socket, socket: Socket, userServices: userServices, server
             server.forEach(u => io.to(u.id.toString()).emit("deleteServerSuccess", serverId));
 
             socket.leave(serverId.toString());
-            io.to(id).emit("deleteServerSuccess", "Left successfully");
+            io.to(id).emit("deleteServerSuccess", serverId);
         } catch (error: any) {
             const errorMessage: string = error.message;
             io.to(id).emit("deleteServerError", errorMessage);

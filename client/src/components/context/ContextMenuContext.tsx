@@ -30,6 +30,11 @@ export function ContextMenuContextProvider({ children }: { children: ReactNode }
         setContextMenuOpen(false);
     };
 
+    const handleOptionClick = (action: () => void) => {
+        action();
+        closeContextMenu();
+    };
+
     return (
         <ContextMenuContext.Provider
             value={{
@@ -48,7 +53,7 @@ export function ContextMenuContextProvider({ children }: { children: ReactNode }
                 }
             >
                 {contextMenuOptions && contextMenuOptions.map((option, index) => (
-                    <MenuItem key={index} onClick={option.action}>
+                    <MenuItem key={index} onClick={() => handleOptionClick(option.action)}>
                         {option.label}
                     </MenuItem>
                 ))}

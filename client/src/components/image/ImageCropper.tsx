@@ -1,17 +1,14 @@
-import React, {ChangeEvent, useRef, useState} from 'react';
+import React, {ChangeEvent, RefObject, useRef, useState} from 'react';
 import {
     Cropper,
     CropperRef, CropperPreviewRef, CircleStencil,
 } from 'react-advanced-cropper';
-
 import 'react-advanced-cropper/dist/style.css'
 
 import styles from './image.module.css'
-import {Slider} from "@mui/material";
 
-export default function ImageCropper({ setServerIcon }: { setServerIcon: (image: string) => void }) {
+export default function ImageCropper({ cropperRef }: { cropperRef: RefObject<CropperRef> }) {
     const previewRef = useRef<CropperPreviewRef>(null);
-    const cropperRef = useRef<CropperRef>(null);
     const [src, setSrc] = useState("");
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -42,21 +39,15 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
         setSrc("");
     };
 
-    const onOk = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        const canvas = cropperRef.current?.getCanvas();
-        if (canvas) {
-            setServerIcon(canvas.toDataURL())
-        }
-    };
-
     return (
         <div className={styles.imageContainer}>
             <div className={styles.cropper}>
                 <Cropper
                     ref={cropperRef}
                     className={styles.cropper}
-                    stencilProps={{aspectRatio: 1}}
+                    stencilProps={{
+                        aspectRatio: 1,
+                }}
                     src={src}
                     onUpdate={onUpdate}
                     stencilComponent={CircleStencil}
@@ -68,7 +59,6 @@ export default function ImageCropper({ setServerIcon }: { setServerIcon: (image:
                 Upload image
             </label>
             <button onClick={onClear}>Clear</button>
-            <button onClick={onOk}>Set</button>
         </div>
     );
 };

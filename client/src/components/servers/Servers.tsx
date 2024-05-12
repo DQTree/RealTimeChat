@@ -33,10 +33,7 @@ export default function Servers() {
                     </div>
                 ))
             }
-
             <button className={styles.server} onClick={() => handleShow(<ServerCreateForm/>)}><Add/></button>
-
-
         </div>
     );
 }

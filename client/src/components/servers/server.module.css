@@ -3,11 +3,12 @@
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    overflow-y: scroll;
 }
 
 .server {
     margin: 0.4rem;
-    transition: ease-out 0.2s;
+    transition: ease-in-out 0.2s;
     border-radius: 32px;
     background: var(--tertiary);
     height: 4rem;
@@ -18,19 +19,17 @@
 }
 
 .server img {
+    transition: ease-in-out 0.2s;
     border-radius: 32px;
     width: 4rem;
 }
 
-.server:hover {
+.server:hover,
+.server:hover img,
+.server:hover a {
     transition: ease-in-out 0.2s;
     border-radius: 20px;
     background: rgba(64, 64, 64, 1);
-}
-
-.server:hover img {
-    transition: ease-in-out 0.2s;
-    border-radius: 20px;
 }
 
 .serverContextMenu:last-child {
