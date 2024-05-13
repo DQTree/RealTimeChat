@@ -1,7 +1,9 @@
 'use client'
 import React from "react";
-import './globals.css'
 import CustomLayout from "@/components/customlayout/CustomLayout";
+
+import './globals.css'
+import vt323 from "@/lib/font";
 
 export default function RootLayout({children}: {
   children: React.ReactNode
@@ -11,7 +13,7 @@ export default function RootLayout({children}: {
         <head>
             <title>RealTimeChat</title>
         </head>
-        <body>
+        <body className={vt323.className}>
             <CustomLayout>
                 {children}
             </CustomLayout>
