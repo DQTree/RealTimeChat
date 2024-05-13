@@ -29,6 +29,7 @@
 
 .messages {
     overflow-y: auto;
+    flex: 10rem;
 }
 
 .memberArea {

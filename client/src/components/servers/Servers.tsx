@@ -4,8 +4,32 @@ import ServerCreateForm from "@/components/servers/ServerCreateForm";
 import {Add} from "@mui/icons-material";
 import {useContextMenu} from "@/components/context/ContextMenuContext";
 import {useAuth} from "@/components/context/AuthContext";
+import styled from "styled-components";
 
 import styles from './server.module.css'
+
+const Scrollbar = styled.div`
+    &::-webkit-scrollbar {
+        width: 4px;
+        background: transparent;
+    }   
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 16px;
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+`;
 
 export default function Servers() {
     const {servers, changeServer, deleteServer, leaveServer} = useSocket();
@@ -14,7 +38,7 @@ export default function Servers() {
     const {loggedUser} = useAuth()
 
     return (
-        <div className={styles.servers}>
+        <Scrollbar className={styles.servers}>
             {servers &&
                 servers.map((server, index) => (
                     <div key={index} onContextMenu={e => {
@@ -33,7 +57,9 @@ export default function Servers() {
                     </div>
                 ))
             }
-            <button className={styles.server} onClick={() => handleShow(<ServerCreateForm/>)}><Add/></button>
-        </div>
+            <div>
+                <button className={styles.server} onClick={() => handleShow(<ServerCreateForm/>)}><Add/></button>
+            </div>
+        </Scrollbar>
     );
 }

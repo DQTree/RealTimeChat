@@ -4,6 +4,7 @@
     flex-direction: column;
     flex-wrap: nowrap;
     overflow-y: scroll;
+    padding-left: 4px
 }
 
 .server {

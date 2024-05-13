@@ -4,6 +4,31 @@ import {useSocket} from "@/components/context/SocketContext";
 import Member from "@/components/members/Member";
 
 import styles from './bottom.module.css'
+import styled from "styled-components";
+
+
+const Scrollbar = styled.div`
+    &::-webkit-scrollbar {
+        width: 4px;
+        background: transparent;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 16px;
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+`;
 
 export default function ChatBottom({currentServer, currentChannel, isShowMembers}: {
     currentServer: CustomServer,
@@ -44,7 +69,7 @@ export default function ChatBottom({currentServer, currentChannel, isShowMembers
     return (
         <div className={styles.bottom}>
             <div className={styles.chatArea}>
-                <div className={styles.messages}>
+                <Scrollbar className={styles.messages}>
                     {currentServer &&
                         currentServer.channels[currentChannel] &&
                         currentServer.channels[currentChannel].messages.map((message, index) => (
@@ -55,7 +80,7 @@ export default function ChatBottom({currentServer, currentChannel, isShowMembers
                                 ))}
                             </div>
                         ))}
-                </div>
+                </Scrollbar>
                 {currentServer && (
                     <div className={styles.sendMessage}>
                         <input
@@ -70,10 +95,10 @@ export default function ChatBottom({currentServer, currentChannel, isShowMembers
                 )}
             </div>
             {isShowMembers &&
-                <div className={styles.memberArea}>
+                <Scrollbar className={styles.memberArea}>
                     {currentServer && currentServer.users.map((user) => (
                         <Member name={user.username} icon={""} status={true}></Member>))}
-                </div>
+                </Scrollbar>
             }
         </div>
     )
