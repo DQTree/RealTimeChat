@@ -3,7 +3,7 @@
 import React, {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 import {useAuth} from "@/components/context/AuthContext";
-import {Button, Container, FormGroup, TextField} from "@mui/material";
+import {Button, FormGroup, TextField} from "@mui/material";
 
 import styles from './register.module.css'
 
@@ -29,8 +29,8 @@ export default function Register() {
     };
 
     return (
-        <Container maxWidth="xs">
-            <div className={styles.registration}>
+        <div className={styles.container}>
+            <div className={styles.register}>
                 <form onSubmit={handleSubmit}>
                     <FormGroup>
                         <TextField
@@ -71,6 +71,6 @@ export default function Register() {
                     </Button>
                 </form>
             </div>
-        </Container>
+        </div>
     );
 }

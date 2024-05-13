@@ -26,7 +26,7 @@ export default function Login() {
     }, [isLoggedIn]);
 
     return (
-        <Container maxWidth="xs">
+        <div className={styles.container}>
             <div className={styles.login}>
                 <form onSubmit={handleSubmit}>
                     <FormGroup className="mb-3">
@@ -54,6 +54,6 @@ export default function Login() {
                     <Button variant="contained" color="primary" type="submit">Login</Button>
                 </form>
             </div>
-        </Container>
+        </div>
     );
 }
