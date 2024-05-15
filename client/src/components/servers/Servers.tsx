@@ -7,6 +7,7 @@ import {useAuth} from "@/components/context/AuthContext";
 import styled from "styled-components";
 
 import styles from './server.module.css'
+import Server from "@/components/servers/server/Server";
 
 const Scrollbar = styled.div`
     &::-webkit-scrollbar {
@@ -32,34 +33,27 @@ const Scrollbar = styled.div`
 `;
 
 export default function Servers() {
-    const {servers, changeServer, deleteServer, leaveServer} = useSocket();
-    const {handleShow} = useOverlay();
-    const {openContextMenu} = useContextMenu();
-    const {loggedUser} = useAuth()
+    const { servers, changeServer, deleteServer, leaveServer } = useSocket();
+    const { handleShow } = useOverlay();
+    const { openContextMenu } = useContextMenu();
+    const { loggedUser } = useAuth();
 
     return (
         <Scrollbar className={styles.servers}>
-            {servers &&
-                servers.map((server, index) => (
-                    <div key={index} onContextMenu={e => {
-                        const isOwner = server.owner.some(u => u.id == loggedUser!.id);
-                        const isMember = server.users.some(u => u.id == loggedUser!.id); // Assuming members is an array of user IDs
-                        const options = isOwner ? [
-                            { label: "Delete server", action: () => deleteServer(server.id) }
-                        ] : isMember ? [
-                            { label: "Leave server", action: () => leaveServer(server.id) }
-                        ] : [];
-                        openContextMenu(e, options);
-                    }}>
-                        <button className={styles.server} onClick={() => changeServer(server.id)}>
-                            {server.icon ? <img src={server.icon} alt={server.name} /> : server.name[0]}
-                        </button>
-                    </div>
-                ))
-            }
-            <div>
-                <button className={styles.server} onClick={() => handleShow(<ServerCreateForm/>)}><Add/></button>
-            </div>
+            {servers && loggedUser && servers.map((server) => (
+                <Server
+                    key={server.id}
+                    server={server}
+                    user={loggedUser}
+                    openContextMenu={openContextMenu}
+                    deleteServer={deleteServer}
+                    leaveServer={leaveServer}
+                    changeServer={changeServer}
+                />
+            ))}
+            <button className={styles.server} onClick={() => handleShow(<ServerCreateForm />)}>
+                <Add />
+            </button>
         </Scrollbar>
     );
 }
